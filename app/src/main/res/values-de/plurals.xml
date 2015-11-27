@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="grade">
+        <item quantity="one">Jahrgangsstufe</item>
+        <item quantity="other">Jahrgangsstufen</item>
+    </plurals>
+    <plurals name="are_you_sure_delete_subject_selection">
+        <item quantity="one">Willst du diese Belegung wirklich löschen?</item>
+        <item quantity="other">Willst du diese Belegungen wirklich löschen?</item>
+    </plurals>
+</resources>

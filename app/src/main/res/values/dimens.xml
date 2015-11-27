@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="main_activity_top_margin">16dp</dimen>
+    <dimen name="main_activity_horizontal_margin">0dp</dimen>
+    <dimen name="main_activity_spinner_horizontal_margin">8dp</dimen>
+</resources>
