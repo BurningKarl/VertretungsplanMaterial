@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         setBannerMenuItemVisible(substituteSchedule.hasBanner());
     }
 
-    private void setSubstituteScheduleFromFile() {
+    private void setSubstituteScheduleFromFile(boolean showSnackbar) {
         Snackbar snackbar;
         try {
             substituteSchedule = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
@@ -122,9 +125,13 @@ public class MainActivity extends AppCompatActivity {
             emptyListView2.setTextColor(getResources().getColor(android.R.color.primary_text_light));
             emptyListView2.setTextColor(getResources().getColor(android.R.color.primary_text_light));
         }
-        snackbar.show();
+        if (showSnackbar) snackbar.show();
 
         setBannerMenuItemVisible(substituteSchedule.hasBanner());
+    }
+
+    private void setSubstituteScheduleFromFile() {
+        setSubstituteScheduleFromFile(true);
     }
 
     private void setSubstituteSchedule(SubstituteSchedule substituteSchedule) {
@@ -272,8 +279,14 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup(substituteScheduleListViewAdapter1, substituteScheduleListViewAdapter2);
 
         if (savedInstanceState == null) {
-            refresh();
+            if (SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null)).after(new Date((new Date()).getTime()-3*60*1000))) { //newer than 3min
+                Log.d("MainActivity", "substitute schedule loaded from file, because it was downloaded 5min ago");
+                setSubstituteScheduleFromFile(false);
+            } else {
+                refresh();
+            }
         } else {
+            Log.d("MainActivity", "substitute schedule loaded from savedInstanceState");
             try {
                 substituteSchedule = new SubstituteSchedule(savedInstanceState.getString("substitute_schedule"));
                 setSubstituteSchedule(substituteSchedule, false);
@@ -281,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 refresh();
             }
+            spinner.setSelection(savedInstanceState.getInt("selected_spinner_position"));
         }
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -296,6 +310,9 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (substituteSchedule != null) {
             savedInstanceState.putString("substitute_schedule", substituteSchedule.json);
+        }
+        if (spinner != null) {
+            savedInstanceState.putInt("selected_spinner_position", spinner.getSelectedItemPosition());
         }
     }
 

@@ -27,6 +27,11 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
     public ArrayList<String> date_strings = new ArrayList<>();
     public ArrayList<Date> dates = new ArrayList<>();
 
+    public static Date getLastModifiedDate(File dirPath) {
+        File file = new File(dirPath, "SubstituteSchedule.json");
+        return new Date(file.lastModified());
+    }
+
     public static SubstituteSchedule loadFromFile(File dirPath) throws JSONException, ParseException, IOException {
         File file = new File(dirPath, "SubstituteSchedule.json");
         BufferedReader reader = new BufferedReader(new FileReader(file));
