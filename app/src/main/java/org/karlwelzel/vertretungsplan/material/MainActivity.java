@@ -14,7 +14,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +30,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
@@ -39,10 +37,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO: Remember the filter used when going back to this activity
-
-    //TODO: Add background service to support notifications
-
+    private SubstituteScheduleAlarmReceiver alarm = new SubstituteScheduleAlarmReceiver();
     private Toolbar toolbar;
     private Menu toolbarMenu;
     private boolean bannerMenuItemVisible;
@@ -300,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        alarm.setAlarm(this);
 /*
         serviceIntent = new Intent(this, SubstituteScheduleNotificationService.class);
         startService(serviceIntent);

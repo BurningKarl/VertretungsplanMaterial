@@ -1,7 +1,5 @@
 package org.karlwelzel.vertretungsplan.material;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -119,7 +117,6 @@ public class SubstituteScheduleDay extends JSONObject { //represents one day of 
                 entries = (ArrayList<SubstituteScheduleEntry>) this.get(curGrade);
                 ArrayList<SubstituteScheduleEntry> interestingEntries = new ArrayList<>();
                 for (SubstituteScheduleEntry entry : entries) {
-                    Log.d("SubstituteSchDay", entry.subjectAndCourse() + " in " + subjects.toString());
                     if (subjects.contains(entry.subjectAndCourse())) {
                         interestingEntries.add(entry);
                     }
