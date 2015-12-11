@@ -51,10 +51,10 @@ public class SubstituteScheduleTabHost extends TabHost {
         adapter1.setSubstituteScheduleDay(null);
         adapter2.setSubstituteScheduleDay(null);
 
-        for (int i = substituteSchedule.dates.size() - 1; i >= 0; i--) {
-            long timeDifference = nowMilliseconds - this.substituteSchedule.dates.get(i).getTime();
+        for (int i = substituteSchedule.size() - 1; i >= 0; i--) {
+            Date date = this.substituteSchedule.getDate(i);
+            long timeDifference = nowMilliseconds - date.getTime();
             if (timeDifference < 0) { //future
-                Date date = this.substituteSchedule.dates.get(i);
                 TextView title = (TextView) getTabWidget().getChildAt(1).findViewById(android.R.id.title);
                 if (-24 * 60 * 60 * 1000 < timeDifference) { //tomorrow
                     title.setText(getResources().getString(R.string.tomorrow));
@@ -63,11 +63,11 @@ public class SubstituteScheduleTabHost extends TabHost {
                 } else {
                     title.setText((new SimpleDateFormat("EEEE '('d.M.')'", Locale.GERMAN)).format(date));
                 }
-                adapter2.setSubstituteScheduleDay((SubstituteScheduleDay) this.substituteSchedule.entries.get(this.substituteSchedule.date_strings.get(i)));
+                adapter2.setSubstituteScheduleDay(this.substituteSchedule.getDay(i));
                 setChildTabEnabled(1, true);
                 setCurrentTab(1);
             } else if (0 < timeDifference && timeDifference < 24 * 60 * 60 * 1000) { //if first day is today
-                adapter1.setSubstituteScheduleDay((SubstituteScheduleDay) this.substituteSchedule.entries.get(this.substituteSchedule.date_strings.get(i)));
+                adapter1.setSubstituteScheduleDay(this.substituteSchedule.getDay(i));
                 setChildTabEnabled(0, true);
                 if (!adapter2.substituteScheduleDaySet() || adapter2.isEmpty() || timeDifference < 16 * 60 * 60 * 1000) {
                     setCurrentTab(0);

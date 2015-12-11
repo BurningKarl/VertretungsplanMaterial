@@ -77,6 +77,18 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
         }
     }
 
+    public int size() {
+        return entries.length();
+    }
+
+    public SubstituteScheduleDay getDay(int index) throws JSONException {
+        return (SubstituteScheduleDay) entries.get(date_strings.get(index));
+    }
+
+    public Date getDate(int index) {
+        return dates.get(index);
+    }
+
     public boolean hasBanner() {
         return !(banner == null || banner.equals(""));
     }

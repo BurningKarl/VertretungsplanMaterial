@@ -84,20 +84,21 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
          * Here are some examples of ELAPSED_REALTIME_WAKEUP:
          */
 
-         // Wake up the device to fire a one-time alarm in a quarter of a minute.
+         // Wake up the device to fire a one-time alarm in 15 seconds.
          alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                  SystemClock.elapsedRealtime() +
                  15*1000, alarmIntent);
 
 
-        /*
-         * // Wake up the device to fire the alarm in 30 minutes, and every 30 minutes
-         * // after that.
-         * alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 
-         *         AlarmManager.INTERVAL_HALF_HOUR, 
-         *         AlarmManager.INTERVAL_HALF_HOUR, alarmIntent);
-         *
-         *
+
+         //TODO: Add setting to change the interval
+         // Wake up the device to fire the alarm in 1 hour, and every hour
+         // after that.
+         alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                 AlarmManager.INTERVAL_HOUR,
+                 AlarmManager.INTERVAL_HOUR, alarmIntent);
+
+         /*
          * // Set the alarm to fire at approximately 8:30 a.m., according to the device's
          * // clock, and to repeat once a day.
          * alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
@@ -128,12 +129,16 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
         
         // Disable {@code SampleBootReceiver} so that it doesn't automatically restart the 
         // alarm when the device is rebooted.
+
+/*
         ComponentName receiver = new ComponentName(context, SubstituteScheduleBootReceiver.class);
         PackageManager pm = context.getPackageManager();
 
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
+*/
+
     }
     // END_INCLUDE(cancel_alarm)
 }

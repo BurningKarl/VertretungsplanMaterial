@@ -3,6 +3,7 @@ package org.karlwelzel.vertretungsplan.material;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 /**
  * This BroadcastReceiver automatically (re)starts the alarm when the device is
@@ -16,7 +17,8 @@ public class SubstituteScheduleBootReceiver extends BroadcastReceiver {
     SubstituteScheduleAlarmReceiver alarm = new SubstituteScheduleAlarmReceiver();
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
+        Log.d("BroadcastReceiver", intent.getAction());
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED))
         {
             alarm.setAlarm(context);
         }
