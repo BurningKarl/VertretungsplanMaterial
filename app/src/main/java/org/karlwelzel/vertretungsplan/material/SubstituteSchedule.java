@@ -85,6 +85,10 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
         return (SubstituteScheduleDay) entries.get(date_strings.get(index));
     }
 
+    public SubstituteScheduleDay getDay(Date date) throws JSONException {
+        return getDay(dates.indexOf(date));
+    }
+
     public Date getDate(int index) {
         return dates.get(index);
     }

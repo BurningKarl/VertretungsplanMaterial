@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -23,7 +24,8 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
     private PendingIntent alarmIntent;
   
     @Override
-    public void onReceive(Context context, Intent intent) {   
+    public void onReceive(Context context, Intent intent) {
+        Log.d("AlarmReceiver", "onReceive");
         // BEGIN_INCLUDE(alarm_onreceive)
         /* 
          * If your receiver intent includes extras that need to be passed along to the
@@ -54,6 +56,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
      * @param context
      */
     public void setAlarm(Context context) {
+        Log.d("AlarmReceiver", "setAlarm");
         alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, SubstituteScheduleAlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
@@ -87,7 +90,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
          // Wake up the device to fire a one-time alarm in 15 seconds.
          alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                  SystemClock.elapsedRealtime() +
-                 15*1000, alarmIntent);
+                 1000, alarmIntent);
 
 
 
@@ -122,6 +125,8 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
      */
     // BEGIN_INCLUDE(cancel_alarm)
     public void cancelAlarm(Context context) {
+        Log.d("AlarmReceiver", "cancelAlarm");
+
         // If the alarm has been set, cancel it.
         if (alarmMgr!= null) {
             alarmMgr.cancel(alarmIntent);

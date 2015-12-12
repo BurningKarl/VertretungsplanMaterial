@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-//        alarm.setAlarm(this);
+        alarm.setAlarm(this);
 /*
         serviceIntent = new Intent(this, SubstituteScheduleNotificationService.class);
         startService(serviceIntent);

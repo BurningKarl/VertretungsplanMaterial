@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -34,7 +36,9 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class SubstituteScheduleNotificationService extends IntentService {
-    public SubstituteScheduleNotificationService() {super("SchedulingService");}
+    public SubstituteScheduleNotificationService() {
+        super("SchedulingService");
+    }
 
     // An ID used to post the notification.
     public static final int NOTIFICATION_ID = 1;
@@ -89,7 +93,6 @@ public class SubstituteScheduleNotificationService extends IntentService {
         Log.i("NotificationService", "NotificationService.onHandle");
 
         if (isNetworkAvailable()) {
-//            final SubstituteSchedule substituteScheduleFromFile = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
             JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -102,8 +105,9 @@ public class SubstituteScheduleNotificationService extends IntentService {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-//                        SubstituteScheduleDay todayFromFile = null;
                         SubstituteScheduleDay todayFromInternet = null;
+                        Date date = null;
+                        String date_string = "";
                         long nowMilliseconds = (new Date()).getTime();
 /*
                             for (int i = 0; i < substituteScheduleFromFile.size(); i++) {
@@ -114,32 +118,54 @@ public class SubstituteScheduleNotificationService extends IntentService {
                             }
 */
                         for (int i = 0; i < substituteScheduleFromInternet.size(); i++) {
-                            long timeDifference = nowMilliseconds - substituteScheduleFromInternet.getDate(i).getTime();
-                            if (0 < timeDifference && timeDifference < 2 * 24 * 60 * 60 * 1000) { //if first day is today
-                                todayFromInternet = substituteScheduleFromInternet.getDay(i);
-                            }
+                            date = substituteScheduleFromInternet.getDate(i);
+                            long timeDifference = nowMilliseconds - date.getTime();
+                            if (-24 * 60 * 60 * 1000 < timeDifference && timeDifference < 3 * 24 * 60 * 60 * 1000) //&& timeDifference < 16 * 60 * 60 * 1000) {
+                                if (timeDifference > 0) {
+                                    date_string = getResources().getString(R.string.today);
+                                } else if (-24 * 60 * 60 * 1000 < timeDifference) { //tomorrow
+                                    date_string = getResources().getString(R.string.tomorrow);
+                                }
+                            todayFromInternet = substituteScheduleFromInternet.getDay(date);
+                            break;
                         }
+
                         if (todayFromInternet == null) {
                             Looper.myLooper().quit();
                             return;
                         }
+
+                        SubstituteSchedule substituteScheduleFromFile = null;
+                        try {
+                            substituteScheduleFromFile = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
+                        } catch (JSONException | ParseException | IOException e) {
+                            e.printStackTrace();
+                        }
+                        SubstituteScheduleDay todayFromFile = substituteScheduleFromFile == null ? null : substituteScheduleFromFile.getDay(date);
+
                         //get SubjectSelection of first subject selection
                         File subjectSelectionDir = getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
                         SubjectSelection selection = SubjectSelection.loadFromFile(subjectSelectionDir,
                                 SubjectSelection.subjectSelectionNames(subjectSelectionDir).get(0));
 
-                        ArrayList<String> entries = todayFromInternet.getFilteredSubstituteScheduleEntries(selection);
+                        ArrayList<String> entriesFromToday = todayFromInternet.getFilteredSubstituteScheduleEntries(selection);
+                        ArrayList<String> entriesFromFile = todayFromFile == null ? new ArrayList<String>() : todayFromFile.getFilteredSubstituteScheduleEntries(selection);
+
+                        TreeSet<String> entries = (new TreeSet<>(entriesFromToday));
+                        entries.removeAll(entriesFromFile);
+
                         String title, msg = "";
                         if (entries.size() > 0) {
-                            for (int i = 0; i < entries.size(); i++) {
-                                msg += entries.get(i)+"\n";
+                            Iterator<String> entriesIterator = entries.iterator();
+                            while (entriesIterator.hasNext()) {
+                                msg += entriesIterator.next() + "\n";
                             }
-                            title = String.format("%1$ss heutige Einträge", selection.name);
+                            title = String.format("%1$ss Einträge von %2$s", selection.name, date_string);
                         } else {
-                            title = String.format("%1$s hat heute keine Einträge", selection.name);
+                            title = String.format("%1$s hat %2$s keine Einträge", selection.name, date_string.toLowerCase());
                         }
 
-                        sendNotification(title, msg);
+                        sendNotification(title, String.format("%1$d neue Einträge", entries.size()), msg);
                     } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -150,7 +176,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
             ParseRestClient.getSubstituteSchedule(this, responseHandler);
         }
 
-        if(Looper.myLooper() == null) {
+        if (Looper.myLooper() == null) {
             Looper.prepare();
         }
         Looper.loop();
@@ -161,7 +187,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
 
     }
 
-    private void sendNotification(String title, String msg) {
+    private void sendNotification(String title, String shortMsg, String msg) {
         notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -174,7 +200,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                         .setContentTitle(title)
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(msg))
-                        .setContentText(msg);
+                        .setContentText(shortMsg);
 
         mBuilder.setContentIntent(contentIntent);
 
