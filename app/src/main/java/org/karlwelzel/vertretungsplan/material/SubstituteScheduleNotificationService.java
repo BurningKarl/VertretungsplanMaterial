@@ -98,7 +98,6 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d("Notification", "onSuccess");
                     try {
-                        //TODO: Show only new entries (compare with last saved substitute schedule)
                         SubstituteSchedule substituteScheduleFromInternet = new SubstituteSchedule(response.getString("json"));
                         try {
                             substituteScheduleFromInternet.saveToFile(getExternalFilesDir(null));
@@ -120,52 +119,73 @@ public class SubstituteScheduleNotificationService extends IntentService {
                         for (int i = 0; i < substituteScheduleFromInternet.size(); i++) {
                             date = substituteScheduleFromInternet.getDate(i);
                             long timeDifference = nowMilliseconds - date.getTime();
-                            if (-24 * 60 * 60 * 1000 < timeDifference && timeDifference < 3 * 24 * 60 * 60 * 1000) //&& timeDifference < 16 * 60 * 60 * 1000) {
+                            if (-24 * 60 * 60 * 1000 < timeDifference && timeDifference < 3 * 24 * 60 * 60 * 1000) {//&& timeDifference < 16 * 60 * 60 * 1000) {
                                 if (timeDifference > 0) {
                                     date_string = getResources().getString(R.string.today);
                                 } else if (-24 * 60 * 60 * 1000 < timeDifference) { //tomorrow
                                     date_string = getResources().getString(R.string.tomorrow);
                                 }
-                            todayFromInternet = substituteScheduleFromInternet.getDay(date);
-                            break;
+                                date_string = date_string.toLowerCase();
+                                todayFromInternet = substituteScheduleFromInternet.getDay(date);
+                                break;
+                            }
                         }
 
                         if (todayFromInternet == null) {
-                            Looper.myLooper().quit();
                             return;
                         }
-
-                        SubstituteSchedule substituteScheduleFromFile = null;
-                        try {
-                            substituteScheduleFromFile = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
-                        } catch (JSONException | ParseException | IOException e) {
-                            e.printStackTrace();
-                        }
-                        SubstituteScheduleDay todayFromFile = substituteScheduleFromFile == null ? null : substituteScheduleFromFile.getDay(date);
 
                         //get SubjectSelection of first subject selection
                         File subjectSelectionDir = getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
                         SubjectSelection selection = SubjectSelection.loadFromFile(subjectSelectionDir,
                                 SubjectSelection.subjectSelectionNames(subjectSelectionDir).get(0));
 
-                        ArrayList<String> entriesFromToday = todayFromInternet.getFilteredSubstituteScheduleEntries(selection);
-                        ArrayList<String> entriesFromFile = todayFromFile == null ? new ArrayList<String>() : todayFromFile.getFilteredSubstituteScheduleEntries(selection);
-
-                        TreeSet<String> entries = (new TreeSet<>(entriesFromToday));
-                        entries.removeAll(entriesFromFile);
-
-                        String title, msg = "";
-                        if (entries.size() > 0) {
-                            Iterator<String> entriesIterator = entries.iterator();
-                            while (entriesIterator.hasNext()) {
-                                msg += entriesIterator.next() + "\n";
-                            }
-                            title = String.format("%1$ss Einträge von %2$s", selection.name, date_string);
-                        } else {
-                            title = String.format("%1$s hat %2$s keine Einträge", selection.name, date_string.toLowerCase());
+                        SubstituteScheduleDay todayFromFile = null;
+                        try {
+                            SubstituteSchedule substituteScheduleFromFile = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
+                            todayFromFile = substituteScheduleFromFile.getDay(date);
+                        } catch (JSONException | ParseException | IOException e) {
+                            e.printStackTrace();
                         }
 
-                        sendNotification(title, String.format("%1$d neue Einträge", entries.size()), msg);
+                        if (todayFromFile == null) {
+                            ArrayList<String> entriesFromToday = todayFromInternet.getFilteredSubstituteScheduleEntries(selection);
+
+                            TreeSet<String> entries = (new TreeSet<>(entriesFromToday));
+
+                            String title, msg = "";
+                            if (entries.size() > 0) {
+                                Iterator<String> entriesIterator = entries.iterator();
+                                while (entriesIterator.hasNext()) {
+                                    msg += entriesIterator.next() + "\n";
+                                }
+                                title = String.format("%1$ss Einträge von %2$s", selection.name, date_string);
+                            } else {
+                                title = String.format("%1$s hat %2$s keine Einträge", selection.name, date_string);
+                            }
+
+                            sendNotification(title, String.format("%1$d Einträge", entries.size()), msg);
+
+                        } else {
+                            ArrayList<String> entriesFromToday = todayFromInternet.getFilteredSubstituteScheduleEntries(selection);
+                            ArrayList<String> entriesFromFile = todayFromFile == null ? new ArrayList<String>() : todayFromFile.getFilteredSubstituteScheduleEntries(selection);
+
+                            TreeSet<String> entries = (new TreeSet<>(entriesFromToday));
+                            entries.removeAll(entriesFromFile);
+
+                            String title, msg = "";
+                            if (entries.size() > 0) {
+                                Iterator<String> entriesIterator = entries.iterator();
+                                while (entriesIterator.hasNext()) {
+                                    msg += entriesIterator.next() + "\n";
+                                }
+                                title = String.format("%1$ss Einträge von %2$s", selection.name, date_string);
+                                sendNotification(title, String.format("%1$d neue Einträge", entries.size()), msg);
+                            } else {
+//                                title = String.format("%1$s hat %2$s keine Einträge", selection.name, date_string);
+                            }
+                        }
+
                     } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
