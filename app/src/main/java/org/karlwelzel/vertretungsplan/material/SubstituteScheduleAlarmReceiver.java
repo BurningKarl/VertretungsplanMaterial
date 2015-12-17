@@ -110,7 +110,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
 
         // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
         // device is rebooted.
-        ComponentName receiver = new ComponentName(context, SubstituteScheduleBootReceiver.class);
+        ComponentName receiver = new ComponentName(context, SubstituteScheduleBroadcastReceiver.class);
         PackageManager pm = context.getPackageManager();
 
         pm.setComponentEnabledSetting(receiver,
@@ -136,7 +136,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
         // alarm when the device is rebooted.
 
 /*
-        ComponentName receiver = new ComponentName(context, SubstituteScheduleBootReceiver.class);
+        ComponentName receiver = new ComponentName(context, SubstituteScheduleBroadcastReceiver.class);
         PackageManager pm = context.getPackageManager();
 
         pm.setComponentEnabledSetting(receiver,

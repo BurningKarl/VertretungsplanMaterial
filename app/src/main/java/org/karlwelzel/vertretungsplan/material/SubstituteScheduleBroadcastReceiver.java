@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,8 +19,15 @@ import android.util.Log;
  * device will not trigger this receiver.
  */
 // BEGIN_INCLUDE(autostart)
-public class SubstituteScheduleBootReceiver extends BroadcastReceiver {
+public class SubstituteScheduleBroadcastReceiver extends BroadcastReceiver {
     SubstituteScheduleAlarmReceiver alarm = new SubstituteScheduleAlarmReceiver();
+
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     private void sendNotification(Context context, String title, String shortMsg, String msg) {
         NotificationManager notificationManager = (NotificationManager)
@@ -49,6 +58,8 @@ public class SubstituteScheduleBootReceiver extends BroadcastReceiver {
         {
             //TODO: Remove this notification
             sendNotification(context, "Boot Receiver", "short message", "long message");
+            alarm.setAlarm(context);
+        } else if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE") && isNetworkAvailable(context)){
             alarm.setAlarm(context);
         }
     }

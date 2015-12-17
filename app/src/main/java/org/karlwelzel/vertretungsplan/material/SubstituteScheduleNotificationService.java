@@ -116,7 +116,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                                 }
                             }
 */
-                        for (int i = 0; i < substituteScheduleFromInternet.size(); i++) {
+                        for (int i = substituteScheduleFromInternet.size()-1; i >= 0 ; i--) {
                             date = substituteScheduleFromInternet.getDate(i);
                             long timeDifference = nowMilliseconds - date.getTime();
                             if (-24 * 60 * 60 * 1000 < timeDifference && timeDifference < 3 * 24 * 60 * 60 * 1000) {//&& timeDifference < 16 * 60 * 60 * 1000) {
