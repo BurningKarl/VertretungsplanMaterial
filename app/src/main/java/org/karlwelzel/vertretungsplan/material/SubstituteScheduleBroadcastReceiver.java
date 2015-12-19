@@ -59,8 +59,9 @@ public class SubstituteScheduleBroadcastReceiver extends BroadcastReceiver {
             //TODO: Remove this notification
             sendNotification(context, "Boot Receiver", "short message", "long message");
             alarm.setAlarm(context);
+            SubstituteScheduleNotificationService.doYourJob(context);
         } else if (intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE") && isNetworkAvailable(context)){
-            alarm.setAlarm(context);
+            SubstituteScheduleNotificationService.doYourJob(context);
         }
     }
 }

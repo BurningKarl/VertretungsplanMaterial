@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     throwable.printStackTrace();
                 }
 
+                @Override
                 public void onFinish() {
                     Log.d("MainActivity", "onFinish");
                     swipeRefresh1.setRefreshing(false);
@@ -274,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup(substituteScheduleListViewAdapter1, substituteScheduleListViewAdapter2);
 
         if (savedInstanceState == null) {
-            if (SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null)).after(new Date((new Date()).getTime()-3*60*1000))) { //newer than 3min
+            if (SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null)).after(new Date((new Date()).getTime() - 3 * 60 * 1000))) { //newer than 3min
                 Log.d("MainActivity", "substitute schedule loaded from file, because it was downloaded 5min ago");
                 setSubstituteScheduleFromFile(false);
             } else {

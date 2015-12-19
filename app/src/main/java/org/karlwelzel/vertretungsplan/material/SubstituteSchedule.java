@@ -81,11 +81,11 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
         return entries.length();
     }
 
-    public SubstituteScheduleDay getDay(int index) throws JSONException {
+    public SubstituteScheduleDay getDay(int index) throws JSONException, ArrayIndexOutOfBoundsException {
         return (SubstituteScheduleDay) entries.get(date_strings.get(index));
     }
 
-    public SubstituteScheduleDay getDay(Date date) throws JSONException {
+    public SubstituteScheduleDay getDay(Date date) throws JSONException, ArrayIndexOutOfBoundsException {
         return getDay(dates.indexOf(date));
     }
 

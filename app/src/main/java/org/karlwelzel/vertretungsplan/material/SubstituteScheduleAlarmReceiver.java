@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
@@ -86,13 +85,6 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
          * 
          * Here are some examples of ELAPSED_REALTIME_WAKEUP:
          */
-
-         // Wake up the device to fire a one-time alarm in 15 seconds.
-         alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                 SystemClock.elapsedRealtime() +
-                 1000, alarmIntent);
-
-
 
          //TODO: Add setting to change the interval
          // Wake up the device to fire the alarm in 1 hour, and every hour
