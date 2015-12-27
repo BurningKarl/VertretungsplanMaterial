@@ -99,7 +99,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     Log.d(TAG, "onSuccess");
                     try {
                         showAllEntries(new SubstituteSchedule(response.getString("json")));
-                    } catch (JSONException | ParseException | IOException e) {
+                    } catch (JSONException | ParseException | IOException | ArrayIndexOutOfBoundsException e) {
                         e.printStackTrace();
                     } finally {
                         if (looper != null) looper.quit();
@@ -118,7 +118,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 }
 
                 public void showAllEntries(SubstituteSchedule substituteSchedule) throws JSONException, IOException {
-                    SubstituteScheduleDay today = substituteSchedule.getDay(dateToday);;
+                    SubstituteScheduleDay today = substituteSchedule.getDay(dateToday);
 
                     //get SubjectSelection of first subject selection
                     File subjectSelectionDir = context.getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
