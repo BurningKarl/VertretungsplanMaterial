@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Vertretungsplan</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="subject_selection">Subject selection</string>
+    <string name="add_subject_selection">Add subject selection</string>
+    <string name="all">All</string>
+    <string name="banner">Banner</string>
+    <string name="info">Info</string>
+    <string name="refresh">Update</string>
+    <string name="edit">Edit</string>
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="rearrange">Rearrange</string>
+    <string name="settings">Settings</string>
+
+    <string name="info_message" formatted="false">Last updated locally: %s\nLast updated on server: %s!</string>
+
+    <string name="download_failed">Download failed</string>
+    <string name="download_successful">Download successful</string>
+    <string name="download_failed_load_from_cache">Download failed. The substitute schedule will be loaded from cache.</string>
+    <string name="download_failed_load_subject_selection_from_cache">Download failed. The subject selection will be loaded from cache.</string>
+    <string name="download_failed_no_cache">Download failed. No cache available.</string>
+
+    <string name="subject_selection_data_not_downloaded_yet_title">Not downloaded yet</string>
+    <string name="subject_selection_data_not_downloaded_yet_message">The Timetable is not downloaded yet, just wait a minute</string>
+
+    <string name="rearrange_message">Enter new position:</string>
+
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+
+    <string name="grade">Grade</string>
+    <string name="subject">Subject</string>
+    <string name="class_">Class</string>
+
+    <string name="loading">Loading…</string>
+    <string name="no_entries">No entries.</string>
+    <string name="no_entries_no_connection">The substitute schedule could not be loaded.</string>
+
+    <string name="pref_color_theme_title">Color theme</string>
+    <string name="pref_color_theme_summary">Choose a color theme</string>
+    <string-array name="pref_color_themes">
+        <item>Default</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="pref_color_themes_internal">
+        <item>default</item>
+        <item>dark</item>
+    </string-array>
+
+    <string name="are_you_sure">Are you sure?</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+</resources>

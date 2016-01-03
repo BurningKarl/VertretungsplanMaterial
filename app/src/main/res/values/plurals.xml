@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="grade">
+        <item quantity="one">Grade</item>
+        <item quantity="other">Grades</item>
+    </plurals>
+    <plurals name="are_you_sure_delete_subject_selection">
+        <item quantity="one">Are you sure you want to delete ths subject selection?</item>
+        <item quantity="other">Are you sure you want to delete these subject selections?</item>
+    </plurals>
+</resources>

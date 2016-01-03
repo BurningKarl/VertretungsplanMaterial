@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vertretungsplan</string>
+
+    <string name="hello_world">Hallo Welt!</string>
+
+    <string name="subject_selection">Belegung</string>
+    <string name="add_subject_selection">Belegung hinzufügen</string>
+    <string name="all">Alle</string>
+    <string name="banner">Banner</string>
+    <string name="info">Info</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="add">Hinzufügen</string>
+    <string name="delete">Löschen</string>
+    <string name="rearrange">Anordnung ändern</string>
+    <string name="settings">Einstellungen</string>
+
+    <string name="info_message" formatted="false">Zuletzt aktualisiert: %s\nZuletzt auf dem Server aktualisiert: %s</string>
+
+    <string name="download_failed">Download fehlgeschlagen</string>
+    <string name="download_successful">Download erfolgreich</string>
+    <string name="download_failed_load_from_cache">Download fehlgeschlagen. Der Vertretungsplan wird aus dem Zwischenspeicher geladen.</string>
+    <string name="download_failed_no_cache">Download fehlgeschlagen. Kein Zwischenspeicher vorhanden.</string>
+    <string name="download_failed_load_subject_selection_from_cache">Download fehlgeschlagen. Der Stundenplan wird aus dem Zwischenspeicher geladen.</string>
+
+    <string name="subject_selection_data_not_downloaded_yet_message">Der Stundenplan konnte noch nicht heruntergeladen. Warte noch einen kurzen Moment.</string>
+    <string name="subject_selection_data_not_downloaded_yet_title">Noch nicht heruntergeladen</string>
+
+    <string name="rearrange_message">Gib die neue Position ein:</string>
+
+    <string name="today">Heute</string>
+    <string name="tomorrow">Morgen</string>
+
+    <string name="grade">Klasse</string>
+    <string name="subject">Fach</string>
+    <string name="class_">Kurs</string>
+
+    <string name="loading">Lädt...</string>
+    <string name="no_entries">Keine Einträge.</string>
+    <string name="no_entries_no_connection">Der Vertretungsplan konnte nicht geladen werden.</string>
+
+    <string name="pref_color_theme_title">Themes</string>
+    <string name="pref_color_theme_summary">Wähle ein Theme</string>
+    <string-array name="pref_color_themes">
+        <item>Standard</item>
+        <item>Dunkel</item>
+    </string-array>
+
+    <string name="are_you_sure">Bist du sicher?</string>
+
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Abbrechen</string>
+</resources>

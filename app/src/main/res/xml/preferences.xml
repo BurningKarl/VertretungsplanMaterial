@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen>
+    <!-- default value is a boolean -->
+        <!--    <ListPreference
+                android:key="color_theme"
+                android:title="@string/pref_color_theme_title"
+                android:summary="@string/pref_color_theme_summary"
+                android:entries="@array/pref_color_themes"
+                android:entryValues="@array/pref_color_themes_internal"
+                android:defaultValue="default" />-->
+</PreferenceScreen>
