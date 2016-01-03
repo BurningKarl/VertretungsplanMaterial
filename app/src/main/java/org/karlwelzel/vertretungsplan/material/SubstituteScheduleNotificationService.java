@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Looper;
@@ -50,10 +52,39 @@ public class SubstituteScheduleNotificationService extends IntentService {
     public static final String BROADCAST_DATA_STATUS = "org.karlwelzel.vertretungsplantest.BROADCAST_DATA_STATUS";
 
     //TODO: Give user the option to change this time (add to settings)
-    public static final int[] timeShowAllEntriesFromToday = {6, 00};
+    public static final int[] timeShowAllEntriesFromToday = {5, 00};
     //Once per day after this time, all entries are displayed
 
     public static Looper looper = null;
+
+    public static void sendNotification(Context context, String title, String shortMsg, String msg) {
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+                new Intent(context, MainActivity.class), 0);
+
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(title)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(msg))
+                        .setContentText(shortMsg)
+                        .setContentIntent(contentIntent);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            mBuilder.setSmallIcon(R.drawable.ic_launcher_notification);
+            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.ic_launcher);
+            mBuilder.setLargeIcon(largeIcon);
+        }
+
+        Notification notification = mBuilder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notificationManager.notify(NOTIFICATION_ID, notification);
+    }
 
     private static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
@@ -99,7 +130,9 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     Log.d(TAG, "onSuccess");
                     try {
                         showAllEntries(new SubstituteSchedule(response.getString("json")));
-                    } catch (JSONException | ParseException | IOException | ArrayIndexOutOfBoundsException e) {
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        Log.d(TAG, "The SubsituteScheduleDay of today is missing");
+                    } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
                         if (looper != null) looper.quit();
@@ -110,7 +143,9 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                     try {
                         showAllEntries(SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null)));
-                    } catch (JSONException | ParseException | IOException | ArrayIndexOutOfBoundsException e) {
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        Log.d(TAG, "The SubsituteScheduleDay of today is missing");
+                    } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
                         if (looper != null) looper.quit();
@@ -192,8 +227,9 @@ public class SubstituteScheduleNotificationService extends IntentService {
                             String title = String.format("%1$ss Einträge von heute", selection.name);
                             sendNotification(context, title, String.format("%1$d neue Einträge", entries.size()), msg);
                         }
-
-                    } catch (JSONException | ParseException | IOException | ArrayIndexOutOfBoundsException e) {
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        Log.d(TAG, "The SubsituteScheduleDay of today is missing");
+                    } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
                         if (looper != null) looper.quit();
@@ -202,28 +238,6 @@ public class SubstituteScheduleNotificationService extends IntentService {
             };
             ParseRestClient.getSubstituteSchedule(context, responseHandler);
         }
-    }
-
-    private static void sendNotification(Context context, String title, String shortMsg, String msg) {
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                new Intent(context, MainActivity.class), 0);
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher) //TODO: Use icon that gets displayed properly
-                        .setContentTitle(title)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(shortMsg);
-
-        mBuilder.setContentIntent(contentIntent);
-
-        Notification notification = mBuilder.build();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     @Override

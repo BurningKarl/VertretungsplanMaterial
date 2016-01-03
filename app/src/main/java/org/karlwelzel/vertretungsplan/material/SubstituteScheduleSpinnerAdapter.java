@@ -38,7 +38,9 @@ public class SubstituteScheduleSpinnerAdapter extends ArrayAdapter<String> imple
         spinnerItems = new ArrayList<>();
         spinnerItems.addAll(names);
         int count = adapter1.gradesInSubjectSelections().size();
-        spinnerItems.add(resources.getQuantityString(R.plurals.grade, count));
+        if (count >= 1) {
+            spinnerItems.add(resources.getQuantityString(R.plurals.grade, count));
+        }
         spinnerItems.add(resources.getString(R.string.all));
         setItems(spinnerItems);
     }

@@ -20,6 +20,7 @@ import java.util.Iterator;
  * Created by Karl on 06.10.2015.
  */
 public class SubstituteSchedule extends JSONObject { //represents the whole substitute schedule
+    public Date updatedAt;
     public String json;
     public String banner;
     public JSONObject news;
@@ -52,6 +53,9 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
     public SubstituteSchedule(String json) throws JSONException, ParseException {
         super(json);
         this.json = json;
+
+        //"2016-01-03T22:28:58.223000"
+        updatedAt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(getString("aktualisiert").substring(0, 19));
 
         banner = getString("banner");
 

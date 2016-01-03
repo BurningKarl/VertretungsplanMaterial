@@ -8,12 +8,15 @@
     <string name="add_subject_selection">Belegung hinzufügen</string>
     <string name="all">Alle</string>
     <string name="banner">Banner</string>
+    <string name="info">Info</string>
     <string name="refresh">Aktualisieren</string>
     <string name="edit">Bearbeiten</string>
     <string name="add">Hinzufügen</string>
     <string name="delete">Löschen</string>
     <string name="rearrange">Anordnung ändern</string>
     <string name="settings">Einstellungen</string>
+
+    <string name="info_message" formatted="false">Zuletzt aktualisiert: %s\nZuletzt auf dem Server aktualisiert: %s</string>
 
     <string name="download_failed">Download fehlgeschlagen</string>
     <string name="download_successful">Download erfolgreich</string>

@@ -10,6 +10,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Random;
 
 
 /**
@@ -86,19 +87,25 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
          * Here are some examples of ELAPSED_REALTIME_WAKEUP:
          */
 
-         //TODO: Add setting to change the interval
-         // Wake up the device to fire the alarm in 1 hour, and every hour
-         // after that.
-         alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                 AlarmManager.INTERVAL_HOUR,
-                 AlarmManager.INTERVAL_HOUR, alarmIntent);
+        Calendar calendarShowAllEntriesFromToday = Calendar.getInstance();
+        calendarShowAllEntriesFromToday.setTimeInMillis(System.currentTimeMillis());
+        calendarShowAllEntriesFromToday.set(Calendar.MILLISECOND, 0);
+        calendarShowAllEntriesFromToday.set(Calendar.SECOND, 0);
+        calendarShowAllEntriesFromToday.set(Calendar.MINUTE, SubstituteScheduleNotificationService.timeShowAllEntriesFromToday[1]);
+        calendarShowAllEntriesFromToday.set(Calendar.HOUR_OF_DAY, SubstituteScheduleNotificationService.timeShowAllEntriesFromToday[0]);
+        calendarShowAllEntriesFromToday.getTimeInMillis();
 
-         /*
-         * // Set the alarm to fire at approximately 8:30 a.m., according to the device's
-         * // clock, and to repeat once a day.
-         * alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-         *        calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-         */
+        // Set the alarm to fire at approximately 6:00 a.m. (with random 5min delay), according to the device's
+        // clock, and to repeat once a day.
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+               calendarShowAllEntriesFromToday.getTimeInMillis()+ (new Random()).nextInt(10*60*1000), AlarmManager.INTERVAL_DAY, alarmIntent);
+
+        //TODO: Add setting to change the interval
+        // Wake up the device to fire the alarm in 1 hour, and every hour
+        // after that.
+        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                AlarmManager.INTERVAL_HOUR,
+                AlarmManager.INTERVAL_HOUR, alarmIntent);
 
         // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
         // device is rebooted.

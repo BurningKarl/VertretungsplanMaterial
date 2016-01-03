@@ -29,7 +29,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         if (toolbarMenu != null) {
             toolbarMenu.findItem(R.id.action_banner).setVisible(value);
         }
-        if (value) {
+        if (bannerMenuItemVisible) {
             openBannerPopup();
         }
     }
@@ -188,6 +190,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         builder.create().show();
+    }
+
+    private void openInfoPopup() {
+        Date lastModified = SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null));
+        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
+        new AlertDialog.Builder(this)
+                .setMessage(String.format(getResources().getString(R.string.info_message), dateFormat.format(lastModified), dateFormat.format(substituteSchedule.updatedAt)))
+                .setTitle(R.string.info)
+                .setNeutralButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create().show();
     }
 
     public File getSubjectSelectionDir() {
@@ -332,6 +349,10 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_banner:
                 openBannerPopup();
+                return true;
+
+            case R.id.action_info:
+                openInfoPopup();
                 return true;
 
             case R.id.action_refresh:
