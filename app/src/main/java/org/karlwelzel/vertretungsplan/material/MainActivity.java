@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -318,6 +319,18 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent = new Intent(this, SubstituteScheduleNotificationService.class);
         startService(serviceIntent);
 */
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("MainActivity", "onStop");
+        super.onStop();
+
+        try {
+            Runtime.getRuntime().exec(new String[] { "logcat", "-f", (new File(Environment.getExternalStorageDirectory(), "vertretungsplan_log.txt")).toString(), "-v", "time", "ActivityManager:W", "org.karlwelzel.vertretungsplan.material:D"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

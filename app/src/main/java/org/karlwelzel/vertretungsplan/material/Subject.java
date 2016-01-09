@@ -40,7 +40,7 @@ public class Subject extends HashMap<String, String> {
         put("teacher", teacher);
     }
 
-    public String toString() {
+    public String convertToString() {
         return subjectToString(get("subject"), get("course"), get("teacher"));
     }
 }

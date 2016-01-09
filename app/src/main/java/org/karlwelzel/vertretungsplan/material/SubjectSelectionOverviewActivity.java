@@ -39,6 +39,7 @@ public class SubjectSelectionOverviewActivity extends AppCompatActivity {
     }
 
     private void editSubjectSelection(String name) {
+        //TODO: If no grade was set (or no file was created), don't add this name to SubjectSelectionOrder
         Log.d("SubjectSelectionOv.", "editSubjectSelection: " + name);
         boolean found = false;
         for (int i = 0; i < listViewAdapter.getCount(); i++) {
