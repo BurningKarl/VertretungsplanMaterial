@@ -57,7 +57,7 @@ public class SubjectSelectionListViewAdapter extends ArrayAdapter<String> implem
         ArrayList<String> list = new ArrayList<>();
         list.add(getContext().getResources().getString(R.string.grade) + ": " + subjectSelection.getGrade());
         for (Subject subject : subjectSelection.subjects) {
-            list.add(subject.toString());
+            list.add(subject.convertToString());
         }
         setItems(list);
     }

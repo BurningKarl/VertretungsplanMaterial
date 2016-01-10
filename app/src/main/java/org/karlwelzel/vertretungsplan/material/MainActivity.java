@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -33,6 +34,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -194,7 +196,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void openInfoPopup() {
         Date lastModified = SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null));
-        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
+        DateFormat dateFormat;
+        if (Locale.getDefault() == Locale.GERMAN) {
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
+        } else {
+            dateFormat = SimpleDateFormat.getDateTimeInstance();
+        }
         new AlertDialog.Builder(this)
                 .setMessage(String.format(getResources().getString(R.string.info_message), dateFormat.format(lastModified), dateFormat.format(substituteSchedule.updatedAt)))
                 .setTitle(R.string.info)
@@ -318,6 +325,18 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent = new Intent(this, SubstituteScheduleNotificationService.class);
         startService(serviceIntent);
 */
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("MainActivity", "onStop");
+        super.onStop();
+
+        try {
+            Runtime.getRuntime().exec(new String[] { "logcat", "-f", (new File(Environment.getExternalStorageDirectory(), "vertretungsplan_log.txt")).toString(), "-v", "time", "ActivityManager:W", "org.karlwelzel.vertretungsplan.material:D"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
