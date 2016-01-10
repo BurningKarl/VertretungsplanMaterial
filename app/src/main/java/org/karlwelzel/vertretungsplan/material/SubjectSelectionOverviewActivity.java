@@ -92,8 +92,6 @@ public class SubjectSelectionOverviewActivity extends AppCompatActivity {
         final ActionBar actionBar = SubjectSelectionOverviewActivity.this.getSupportActionBar();
         listView = (ListView) findViewById(R.id.subjectSelectionListView);
         listViewAdapter = new SubjectSelectionOverviewListViewAdapter(this, actionBar);
-//                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Karl", "Yannik", "Christian", "Nikita", "Aaron", "Franziska", "Miriam", "Alison", "Cordula", "Astrid", "Tom", "Simon", "Erik", "Laura", "Peter", "Lukas", "Max", "Kev1n", "Maxim"});
-//        listViewAdapter.addAll("Karl", "Yannik", "Christian", "Nikita", "Aaron", "Franziska", "Miriam", "Alison", "Cordula", "Astrid", "Tom", "Simon", "Erik", "Laura", "Peter", "Lukas", "Max", "Kev1n", "Maxim");
         listViewAdapter.addAll(SubjectSelection.subjectSelectionNames(getSubjectSelectionDir()));
         listView.setAdapter(listViewAdapter);
         listView.setMultiChoiceModeListener(listViewAdapter);
