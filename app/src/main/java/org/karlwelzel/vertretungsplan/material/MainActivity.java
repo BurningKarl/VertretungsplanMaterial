@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         Snackbar snackbar;
         try {
             substituteSchedule = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
+            SubstituteSchedule.cacheFile(getExternalFilesDir(null)).setLastModified((new Date()).getTime());
             tabHost.setSubstituteSchedule(substituteSchedule);
             snackbar = makeSnackbar(R.string.download_failed_load_from_cache);
             emptyListView1.setText(R.string.no_entries);
@@ -145,8 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d("MainActivity", "onSuccess");
                     try {
-                        setSubstituteSchedule(new SubstituteSchedule(response.getString("json")));
-//                        setSubstituteSchedule(new SubstituteSchedule("{\"news\": {\"2015-10-15\": \"Nur ein paar News\"}, \"banner\": \"Nur ein Banner\", \"eintraege\": {\"2015-10-14\": {\"Q1\": [{\"fach\": \"GE L1\", \"art\": \"Raum-Vtr.\", \"stunde\": \"3\", \"vertreter\": \"KOR\", \"kfach\": \"GE L1\", \"klehrer\": \"KOR\", \"klasse\": \"Q1\", \"raum\": \"A-K04\"}], \"6A\": [{\"fach\": null, \"art\": \"Entfall\", \"stunde\": \"1\", \"vertreter\": null, \"kfach\": \"SP\", \"klehrer\": \"H\\u00dcW\", \"klasse\": \"6A\", \"raum\": null}], \"9B\": [{\"fach\": \"M\", \"art\": \"Statt-Vertretung\", \"stunde\": \"3\", \"vertreter\": \"HEY\", \"kfach\": \"M\", \"klehrer\": \"VUK\", \"klasse\": \"9B\", \"raum\": \"A-K13\"}], \"7A\": [{\"fach\": \"GE\", \"art\": \"Statt-Vertretung\", \"stunde\": \"2\", \"vertreter\": \"BEC\", \"kfach\": \"GE\", \"klehrer\": \"K\\u00d6N\", \"klasse\": \"7A\", \"raum\": \"A-K04\"}, {\"fach\": \"ITG\", \"art\": \"Vertretung\", \"stunde\": \"3\", \"vertreter\": \"REI\", \"kfach\": \"ITG\", \"klehrer\": \"K\\u00d6V\", \"klasse\": \"7A\", \"raum\": \"B-F1\"}, {\"fach\": \"MU\", \"art\": \"Statt-Vertretung\", \"stunde\": \"4\", \"vertreter\": \"NIE\", \"kfach\": \"MU\", \"klehrer\": \"H\\u00dcW\", \"klasse\": \"7A\", \"raum\": \"B-04\"}], \"8B\": [{\"fach\": \"WP2-SoW\", \"art\": \"Vertretung\", \"stunde\": \"4\", \"vertreter\": \"ECK\", \"kfach\": \"WP2-SoW\", \"klehrer\": \"K\\u00d6N\", \"klasse\": \"8A, 8B\", \"raum\": \"A-K04\"}, {\"fach\": null, \"art\": \"Entfall\", \"stunde\": \"5\", \"vertreter\": null, \"kfach\": \"POL\", \"klehrer\": \"K\\u00d6N\", \"klasse\": \"8B\", \"raum\": null}], \"8A\": [{\"fach\": \"WP2-SoW\", \"art\": \"Vertretung\", \"stunde\": \"4\", \"vertreter\": \"ECK\", \"kfach\": \"WP2-SoW\", \"klehrer\": \"K\\u00d6N\", \"klasse\": \"8A, 8B\", \"raum\": \"A-K04\"}], \"9A\": [{\"fach\": \"SP\", \"art\": \"Statt-Vertretung\", \"stunde\": \"3\", \"vertreter\": \"EUS\", \"kfach\": \"SP\", \"klehrer\": \"H\\u00dcW\", \"klasse\": \"9A\", \"raum\": \"SP2\"}], \"7T\": [{\"fach\": \"M\", \"art\": \"Vertretung\", \"stunde\": \"2\", \"vertreter\": \"REI\", \"kfach\": \"M\", \"klehrer\": \"VUK\", \"klasse\": \"7T\", \"raum\": \"A-K13\"}], \"9T\": [{\"fach\": \"POL\", \"art\": \"Statt-Vertretung\", \"stunde\": \"1\", \"vertreter\": \"CAR\", \"kfach\": \"POL\", \"klehrer\": \"K\\u00d6N\", \"klasse\": \"9T\", \"raum\": \"A-K04\"}, {\"fach\": \"SP\", \"art\": \"Statt-Vertretung\", \"stunde\": \"3\", \"vertreter\": \"CAR\", \"kfach\": \"SP\", \"klehrer\": \"KRU\", \"klasse\": \"9T\", \"raum\": \"SP1\"}, {\"fach\": \"ITG\", \"art\": \"Statt-Vertretung\", \"stunde\": \"4\", \"vertreter\": \"MEN\", \"kfach\": \"ITG\", \"klehrer\": \"K\\u00d6V\", \"klasse\": \"9T\", \"raum\": \"B-29\"}]}, \"2015-10-15\": {\"Q1\":[{\"fach\": null, \"art\": \"Entfall\", \"stunde\": \"2\", \"vertreter\": null, \"kfach\": \"E5eL1\", \"klehrer\": \"HAR\", \"klasse\": \"Q1\", \"raum\": null}], \"9C\":[{\"fach\": \"GE L1\", \"art\": \"Raum-Vtr.\", \"stunde\": \"3\", \"vertreter\": \"KOR\", \"kfach\": \"GE L1\", \"klehrer\": \"KOR\", \"klasse\": \"9C\", \"raum\": \"A-K04\"}]}}}"));
+                        setSubstituteSchedule(new SubstituteSchedule(response.toString()));
                     } catch (JSONException | ParseException e) {
                         setSubstituteScheduleFromFile();
                         e.printStackTrace();
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()) {
             swipeRefresh1.setRefreshing(true);
             swipeRefresh2.setRefreshing(true);
-            ParseRestClient.getSubstituteSchedule(this, responseHandler);
+            OpenshiftNetworkClient.getSubstituteSchedule(this, responseHandler);
         } else {
             setSubstituteScheduleFromFile();
         }

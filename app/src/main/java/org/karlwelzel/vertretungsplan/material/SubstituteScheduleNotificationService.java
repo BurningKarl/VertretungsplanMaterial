@@ -52,7 +52,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
     public static final String BROADCAST_DATA_STATUS = "org.karlwelzel.vertretungsplantest.BROADCAST_DATA_STATUS";
 
     //TODO: Give user the option to change this time (add to settings)
-    public static final int[] timeShowAllEntriesFromToday = {5, 00};
+    public static final int[] timeShowAllEntriesFromToday = {5, 0};
     //Once per day after this time, all entries are displayed
 
     public static Looper looper = null;
@@ -129,7 +129,9 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "onSuccess");
                     try {
-                        showAllEntries(new SubstituteSchedule(response.getString("json")));
+                        SubstituteSchedule currentSubstituteSchedule = new SubstituteSchedule(response.toString());
+                        currentSubstituteSchedule.saveToFile(context.getExternalFilesDir(null));
+                        showAllEntries(currentSubstituteSchedule);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         Log.d(TAG, "The SubsituteScheduleDay of today is missing");
                     } catch (JSONException | ParseException | IOException e) {
@@ -142,6 +144,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                     try {
+                        SubstituteSchedule.cacheFile(context.getExternalFilesDir(null)).setLastModified((new Date()).getTime());
                         showAllEntries(SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null)));
                     } catch (ArrayIndexOutOfBoundsException e) {
                         Log.d(TAG, "The SubsituteScheduleDay of today is missing");
@@ -175,7 +178,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     sendNotification(context, title, String.format("%1$d Einträge", entries.size()), msg);
                 }
             };
-            ParseRestClient.getSubstituteSchedule(context, responseHandler);
+            OpenshiftNetworkClient.getSubstituteSchedule(context, responseHandler);
 
         } else if (isNetworkAvailable(context)) {
             //show only new entries
@@ -186,15 +189,6 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "onSuccess");
                     try {
-                        SubstituteSchedule substituteScheduleFromInternet = new SubstituteSchedule(response.getString("json"));
-                        Log.d(TAG, dateToday.getTime() + " : " + substituteScheduleFromInternet.dates.get(0).getTime());
-                        try {
-                            substituteScheduleFromInternet.saveToFile(context.getExternalFilesDir(null));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        SubstituteScheduleDay todayFromInternet = substituteScheduleFromInternet.getDay(dateToday);
-
                         SubstituteScheduleDay todayFromFile = null;
                         try {
                             SubstituteSchedule substituteScheduleFromFile = SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null));
@@ -203,13 +197,22 @@ public class SubstituteScheduleNotificationService extends IntentService {
                             e.printStackTrace();
                         }
 
+                        SubstituteSchedule substituteScheduleFromInternet = new SubstituteSchedule(response.toString());
+                        Log.d(TAG, dateToday.getTime() + " : " + substituteScheduleFromInternet.dates.get(0).getTime());
+                        try {
+                            substituteScheduleFromInternet.saveToFile(context.getExternalFilesDir(null));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        SubstituteScheduleDay todayFromInternet = substituteScheduleFromInternet.getDay(dateToday);
+
                         //get SubjectSelection of first subject selection
                         File subjectSelectionDir = context.getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
                         SubjectSelection selection = SubjectSelection.loadFromFile(subjectSelectionDir,
                                 SubjectSelection.subjectSelectionNames(subjectSelectionDir).get(0));
 
                         TreeSet<String> entries = new TreeSet<>(todayFromInternet.getFilteredSubstituteScheduleEntries(selection));
-                        TreeSet<String> entriesFromFile = null;
+                        TreeSet<String> entriesFromFile;
                         if (todayFromFile == null) {
                             entriesFromFile = new TreeSet<>();
                         } else {
@@ -236,7 +239,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     }
                 }
             };
-            ParseRestClient.getSubstituteSchedule(context, responseHandler);
+            OpenshiftNetworkClient.getSubstituteSchedule(context, responseHandler);
         }
     }
 
