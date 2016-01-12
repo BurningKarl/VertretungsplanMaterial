@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     private void openInfoPopup() {
         Date lastModified = SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null));
         DateFormat dateFormat;
-        if (Locale.getDefault() == Locale.GERMAN) {
+        if (Locale.getDefault().getLanguage().equals("DE")) {
             dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
         } else {
             dateFormat = SimpleDateFormat.getDateTimeInstance();

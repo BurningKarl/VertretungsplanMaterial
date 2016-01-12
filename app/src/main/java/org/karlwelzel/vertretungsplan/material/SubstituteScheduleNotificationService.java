@@ -165,6 +165,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
 
                     ArrayList<String> entries = today.getFilteredSubstituteScheduleEntries(selection);
 
+                    //TODO: Use string resources for formatting message and title of notifications
                     String title, msg = "";
                     if (entries.size() > 0) {
                         for (int i = 0; i < entries.size(); i++) {
