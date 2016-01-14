@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         Snackbar snackbar;
         try {
             substituteSchedule = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
-            SubstituteSchedule.cacheFile(getExternalFilesDir(null)).setLastModified((new Date()).getTime());
             tabHost.setSubstituteSchedule(substituteSchedule);
             snackbar = makeSnackbar(R.string.download_failed_load_from_cache);
             emptyListView1.setText(R.string.no_entries);

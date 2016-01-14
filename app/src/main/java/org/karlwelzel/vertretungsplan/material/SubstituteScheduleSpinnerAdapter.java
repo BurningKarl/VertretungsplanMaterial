@@ -26,6 +26,7 @@ public class SubstituteScheduleSpinnerAdapter extends ArrayAdapter<String> imple
     }
 
     public SubstituteScheduleSpinnerAdapter(Context context, SubstituteScheduleListViewAdapter adapter1, SubstituteScheduleListViewAdapter adapter2) {
+        //TODO: Fix umlauts
         super(context, android.R.layout.simple_spinner_item);
         resources = context.getResources();
         this.adapter1 = adapter1;

@@ -61,13 +61,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
         Intent intent = new Intent(context, SubstituteScheduleAlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        // Set the alarm's trigger time to 8:30 a.m.
-        calendar.set(Calendar.HOUR_OF_DAY, 8);
-        calendar.set(Calendar.MINUTE, 30);
-  
-        /* 
+        /*
          * If you don't have precise time requirements, use an inexact repeating alarm
          * the minimize the drain on the device battery.
          * 
@@ -93,9 +87,8 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
         calendarShowAllEntriesFromToday.set(Calendar.SECOND, 0);
         calendarShowAllEntriesFromToday.set(Calendar.MINUTE, SubstituteScheduleNotificationService.timeShowAllEntriesFromToday[1]);
         calendarShowAllEntriesFromToday.set(Calendar.HOUR_OF_DAY, SubstituteScheduleNotificationService.timeShowAllEntriesFromToday[0]);
-        calendarShowAllEntriesFromToday.getTimeInMillis();
 
-        // Set the alarm to fire at approximately 6:00 a.m. (with random 5min delay), according to the device's
+        // Set the alarm to fire at approximately 6:00 a.m. (with random 10min delay), according to the device's
         // clock, and to repeat once a day.
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                calendarShowAllEntriesFromToday.getTimeInMillis()+ (new Random()).nextInt(10*60*1000), AlarmManager.INTERVAL_DAY, alarmIntent);

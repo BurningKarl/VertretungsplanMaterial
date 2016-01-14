@@ -19,7 +19,11 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -56,6 +60,32 @@ public class SubstituteScheduleNotificationService extends IntentService {
     //Once per day after this time, all entries are displayed
 
     public static Looper looper = null;
+
+    public static File lastNotificationFile(File dirPath) {
+        return new File(dirPath, "LastNotification");
+    }
+
+    public static void saveLastTimeAllEntriesFromTodaySent(File dirPath, Date time) throws IOException {
+        File file = lastNotificationFile(dirPath);
+        if (!dirPath.exists()) dirPath.mkdirs();
+        if (!file.exists()) file.createNewFile();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(Long.toString(time.getTime()));
+        writer.close();
+    }
+
+    public static Date loadLastTimeAllEntriesFromTodaySent(File dirPath) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(lastNotificationFile(dirPath)));
+            Date r = new Date(Long.valueOf(reader.readLine()));
+            reader.close();
+            return r;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Date(0);
+        }
+    }
 
     public static void sendNotification(Context context, String title, String shortMsg, String msg) {
         NotificationManager notificationManager = (NotificationManager)
@@ -121,7 +151,12 @@ public class SubstituteScheduleNotificationService extends IntentService {
         calendarToday.set(Calendar.HOUR_OF_DAY, 0);
         final Date dateToday = calendarToday.getTime();
 
-        if (dateShowAllEntriesFromToday.after(SubstituteSchedule.getLastModifiedDate(context.getExternalFilesDir(null))) && dateShowAllEntriesFromToday.before(new Date())) {
+        if (SubjectSelection.subjectSelectionNames(context.getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME)).size() < 1) {
+            Log.d(TAG, "No subject selection! doYourJob aborted");
+            return;
+        }
+
+        if (dateShowAllEntriesFromToday.after(loadLastTimeAllEntriesFromTodaySent(context.getExternalFilesDir(null))) && dateShowAllEntriesFromToday.before(new Date())) {
             Log.d(TAG, "showAllEntriesFromToday");
             //show all entries from today
             JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
@@ -132,8 +167,8 @@ public class SubstituteScheduleNotificationService extends IntentService {
                         SubstituteSchedule currentSubstituteSchedule = new SubstituteSchedule(response.toString());
                         currentSubstituteSchedule.saveToFile(context.getExternalFilesDir(null));
                         showAllEntries(currentSubstituteSchedule);
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        Log.d(TAG, "The SubsituteScheduleDay of today is missing");
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.d(TAG, "The SubstituteScheduleDay of today is missing");
                     } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -144,10 +179,10 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                     try {
-                        SubstituteSchedule.cacheFile(context.getExternalFilesDir(null)).setLastModified((new Date()).getTime());
+                        saveLastTimeAllEntriesFromTodaySent(context.getExternalFilesDir(null), new Date());
                         showAllEntries(SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null)));
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        Log.d(TAG, "The SubsituteScheduleDay of today is missing");
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.d(TAG, "The SubstituteScheduleDay of today is missing");
                     } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -156,7 +191,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 }
 
                 public void showAllEntries(SubstituteSchedule substituteSchedule) throws JSONException, IOException {
-                    SubstituteScheduleDay today = substituteSchedule.getDay(dateToday);
+                    SubstituteScheduleDay today = substituteSchedule.getDay(dateToday); //IndexOutOfBoundsException is catched by onSuccess or onFailure
 
                     //get SubjectSelection of first subject selection
                     File subjectSelectionDir = context.getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
@@ -190,26 +225,16 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "onSuccess");
                     try {
-                        SubstituteScheduleDay todayFromFile = null;
-                        try {
-                            SubstituteSchedule substituteScheduleFromFile = SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null));
-                            todayFromFile = substituteScheduleFromFile.getDay(dateToday);
-                        } catch (JSONException | ParseException | IOException e) {
-                            e.printStackTrace();
-                        }
+                        SubstituteSchedule substituteScheduleFromFile = SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null));
+                        SubstituteScheduleDay todayFromFile = substituteScheduleFromFile.getDay(dateToday);
 
                         SubstituteSchedule substituteScheduleFromInternet = new SubstituteSchedule(response.toString());
-                        Log.d(TAG, dateToday.getTime() + " : " + substituteScheduleFromInternet.dates.get(0).getTime());
-                        try {
-                            substituteScheduleFromInternet.saveToFile(context.getExternalFilesDir(null));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        SubstituteScheduleDay todayFromInternet = substituteScheduleFromInternet.getDay(dateToday);
+                        substituteScheduleFromInternet.saveToFile(context.getExternalFilesDir(null));
+                        SubstituteScheduleDay todayFromInternet = substituteScheduleFromInternet.getDay(dateToday); //IndexOutOfBoundsException
 
                         //get SubjectSelection of first subject selection
                         File subjectSelectionDir = context.getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
-                        SubjectSelection selection = SubjectSelection.loadFromFile(subjectSelectionDir,
+                        SubjectSelection selection = SubjectSelection.loadFromFile(subjectSelectionDir, //IndexOutOfBoundsException (Crashes app)
                                 SubjectSelection.subjectSelectionNames(subjectSelectionDir).get(0));
 
                         TreeSet<String> entries = new TreeSet<>(todayFromInternet.getFilteredSubstituteScheduleEntries(selection));
@@ -231,7 +256,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                             String title = String.format("%1$ss Einträge von heute", selection.name);
                             sendNotification(context, title, String.format("%1$d neue Einträge", entries.size()), msg);
                         }
-                    } catch (ArrayIndexOutOfBoundsException e) {
+                    } catch (IndexOutOfBoundsException e) {
                         Log.d(TAG, "The SubsituteScheduleDay of today is missing");
                     } catch (JSONException | ParseException | IOException e) {
                         e.printStackTrace();
