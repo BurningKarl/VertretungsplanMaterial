@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +18,7 @@ public class SubstituteScheduleDay extends JSONObject { //represents one day of 
     public ArrayList<String> grades = new ArrayList<>();
 
     public SubstituteScheduleDay(String json) throws JSONException {
-        super(json);
+        super(StringEscapeUtils.unescapeJson(json));
         Iterator<String> gradesIterator = this.keys();
         while (gradesIterator.hasNext()) {
             grades.add(gradesIterator.next());
@@ -35,7 +36,7 @@ public class SubstituteScheduleDay extends JSONObject { //represents one day of 
 
     public void setNews(String news_json) {
         try {
-            JSONArray array = new JSONArray(news_json);
+            JSONArray array = new JSONArray(StringEscapeUtils.unescapeJson(news_json));
             news_title = array.getString(0);
             news = array.getString(1);
         } catch (JSONException | NullPointerException e) {

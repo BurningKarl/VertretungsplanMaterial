@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +19,7 @@ public class SubstituteScheduleEntry extends JSONObject { //represents one subst
     public String substitute;     //7
 
     public SubstituteScheduleEntry(String json) throws JSONException {
-        super(json);
+        super(StringEscapeUtils.unescapeJson(json));
         grade = replaceIfNull(this.getString("klasse"), "???");
         lesson = replaceIfNull(this.getString("stunde"), "???");
         room = replaceIfNull(this.getString("raum"), "???");

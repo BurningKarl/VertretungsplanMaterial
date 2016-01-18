@@ -211,7 +211,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                         title = String.format("%1$s hat heute keine Einträge", selection.name);
                     }
 
-                    sendNotification(context, title, String.format("%1$d Einträge", entries.size()), msg);
+                    sendNotification(context, title, String.format("%1$d Einträge", entries.size() - (today.hasNews()?2:0)), msg);
                 }
             };
             OpenshiftNetworkClient.getSubstituteSchedule(context, responseHandler);

@@ -2,6 +2,7 @@ package org.karlwelzel.vertretungsplan.material;
 
 import android.util.Log;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,7 +75,7 @@ public class SubjectSelection extends JSONObject {
     }
 
     public SubjectSelection(String name, String json) throws JSONException {
-        super(json);
+        super(StringEscapeUtils.unescapeJson(json));
         this.name = name;
         JSONArray subjectsArray = new JSONArray(getString("subjects"));
         for (int i = 0; i < subjectsArray.length(); i++) {

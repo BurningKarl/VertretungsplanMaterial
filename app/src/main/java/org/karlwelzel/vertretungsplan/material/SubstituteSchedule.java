@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,7 +54,7 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
     }
 
     public SubstituteSchedule(String json) throws JSONException, ParseException {
-        super(json);
+        super(StringEscapeUtils.unescapeJson(json));
         this.json = json;
 
         //"2016-01-03T22:28:58.223000"

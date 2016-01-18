@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +43,7 @@ public class SubjectSelectionData extends JSONObject {
     }
 
     public SubjectSelectionData(String json) throws JSONException {
-        super(json);
+        super(StringEscapeUtils.unescapeJson(json));
         this.json = json;
     }
 

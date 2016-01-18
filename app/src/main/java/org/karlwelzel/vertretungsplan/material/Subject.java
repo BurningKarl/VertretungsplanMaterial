@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +27,7 @@ public class Subject extends HashMap<String, String> {
 
     public Subject(String json) throws JSONException {
         super();
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = new JSONObject(StringEscapeUtils.unescapeJson(json));
         for (Iterator keys = jsonObject.keys(); keys.hasNext();) {
             String key = (String) keys.next();
             this.put(key, jsonObject.getString(key));
