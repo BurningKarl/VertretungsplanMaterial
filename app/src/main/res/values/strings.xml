@@ -3,7 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
 
-    <string name="subject_selection">Subject selection</string>
+    <string name="subject_selections">Subject selections</string>
     <string name="add_subject_selection">Add subject selection</string>
     <string name="all">All</string>
     <string name="banner">Banner</string>
@@ -17,6 +17,8 @@
 
     <string name="info_message" formatted="false">Last updated locally: %s\nLast updated on server: %s!</string>
 
+    <string name="snackbar_wrong_login">Wrong credentials. Correct them in the settings</string>
+    <string name="wrong_login_text">Wrong credentials</string>
     <string name="download_failed">Download failed</string>
     <string name="download_successful">Download successful</string>
     <string name="download_failed_load_from_cache">Download failed. The substitute schedule will be loaded from cache.</string>
@@ -39,6 +41,11 @@
     <string name="no_entries">No entries.</string>
     <string name="no_entries_no_connection">The substitute schedule could not be loaded.</string>
 
+    <string name="pref_login_title">Login</string>
+    <string name="pref_username">Username</string>
+    <string name="pref_username_summary">The username for the substitute schedule</string>
+    <string name="pref_password">Password</string>
+    <string name="pref_password_summary">The password for the substitute schedule</string>
     <string name="pref_color_theme_title">Color theme</string>
     <string name="pref_color_theme_summary">Choose a color theme</string>
     <string-array name="pref_color_themes">

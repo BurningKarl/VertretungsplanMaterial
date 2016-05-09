@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name=".SubjectSelectionOverviewActivity"
-            android:label="@string/subject_selection"
+            android:label="@string/subject_selections"
             android:theme="@style/AppTheme"
             android:parentActivityName="org.karlwelzel.vertretungsplan.material.MainActivity">
             <meta-data
@@ -41,7 +41,7 @@
 
         <activity
             android:name=".SubjectSelectionActivity"
-            android:label="@string/subject_selection"
+            android:label="@string/subject_selections"
             android:theme="@style/AppTheme"
             android:parentActivityName="org.karlwelzel.vertretungsplan.material.SubjectSelectionOverviewActivity">
             <meta-data

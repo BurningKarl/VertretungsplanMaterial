@@ -75,9 +75,8 @@ public class SubstituteScheduleNotificationService extends IntentService {
     }
 
     public static Date loadLastTimeAllEntriesFromTodaySent(File dirPath) {
-        BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(lastNotificationFile(dirPath)));
+            BufferedReader reader = new BufferedReader(new FileReader(lastNotificationFile(dirPath)));
             Date r = new Date(Long.valueOf(reader.readLine()));
             reader.close();
             return r;
@@ -158,6 +157,13 @@ public class SubstituteScheduleNotificationService extends IntentService {
 
         if (dateShowAllEntriesFromToday.after(loadLastTimeAllEntriesFromTodaySent(context.getExternalFilesDir(null))) && dateShowAllEntriesFromToday.before(new Date())) {
             Log.d(TAG, "showAllEntriesFromToday");
+
+            try {
+                saveLastTimeAllEntriesFromTodaySent(context.getExternalFilesDir(null), new Date());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //show all entries from today
             JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
                 @Override
@@ -179,7 +185,6 @@ public class SubstituteScheduleNotificationService extends IntentService {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
                     try {
-                        saveLastTimeAllEntriesFromTodaySent(context.getExternalFilesDir(null), new Date());
                         showAllEntries(SubstituteSchedule.loadFromFile(context.getExternalFilesDir(null)));
                     } catch (IndexOutOfBoundsException e) {
                         Log.d(TAG, "The SubstituteScheduleDay of today is missing");
@@ -214,7 +219,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     sendNotification(context, title, String.format("%1$d Einträge", entries.size() - (today.hasNews()?2:0)), msg);
                 }
             };
-            OpenshiftNetworkClient.getSubstituteSchedule(context, responseHandler);
+            new NetworkClient(context).getSubstituteSchedule(responseHandler);
 
         } else if (isNetworkAvailable(context)) {
             //show only new entries
@@ -265,7 +270,7 @@ public class SubstituteScheduleNotificationService extends IntentService {
                     }
                 }
             };
-            OpenshiftNetworkClient.getSubstituteSchedule(context, responseHandler);
+            new NetworkClient(context).getSubstituteSchedule(responseHandler);
         }
     }
 

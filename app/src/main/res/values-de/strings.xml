@@ -4,7 +4,7 @@
 
     <string name="hello_world">Hallo Welt!</string>
 
-    <string name="subject_selection">Belegung</string>
+    <string name="subject_selections">Belegungen</string>
     <string name="add_subject_selection">Belegung hinzufügen</string>
     <string name="all">Alle</string>
     <string name="banner">Banner</string>
@@ -18,6 +18,8 @@
 
     <string name="info_message" formatted="false">Zuletzt aktualisiert: %s\nZuletzt auf dem Server aktualisiert: %s</string>
 
+    <string name="snackbar_wrong_login">Falsche Anmeldedaten. Korrigiere sie in den Einstellungen</string>
+    <string name="wrong_login_text">Falsche Anmeldedaten</string>
     <string name="download_failed">Download fehlgeschlagen</string>
     <string name="download_successful">Download erfolgreich</string>
     <string name="download_failed_load_from_cache">Download fehlgeschlagen. Der Vertretungsplan wird aus dem Zwischenspeicher geladen.</string>
@@ -40,6 +42,11 @@
     <string name="no_entries">Keine Einträge.</string>
     <string name="no_entries_no_connection">Der Vertretungsplan konnte nicht geladen werden.</string>
 
+    <string name="pref_login_title">Zugangsdaten</string>
+    <string name="pref_username">Benutzername</string>
+    <string name="pref_username_summary">Der Benutzername für den Vertretungsplan</string>
+    <string name="pref_password">Passwort</string>
+    <string name="pref_password_summary">Das Passwort für den Vertretungsplan</string>
     <string name="pref_color_theme_title">Themes</string>
     <string name="pref_color_theme_summary">Wähle ein Theme</string>
     <string-array name="pref_color_themes">

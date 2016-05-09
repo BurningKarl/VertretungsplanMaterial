@@ -139,42 +139,57 @@ public class MainActivity extends AppCompatActivity {
 
     private void refresh() {
         Log.d("MainActivity", "refresh");
-        if (responseHandler == null) {
-            responseHandler = new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d("MainActivity", "onSuccess");
-                    try {
+        if (responseHandler == null) responseHandler = new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("MainActivity", "onSuccess");
+                try {
+                    Log.d("onSuccess", "status: "+response.getString("status"));
+                    if (response.getString("status").equals("success")) {
                         setSubstituteSchedule(new SubstituteSchedule(response.toString()));
-                    } catch (JSONException | ParseException e) {
-                        setSubstituteScheduleFromFile();
-                        e.printStackTrace();
                     }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
-                    Log.d("MainActivity", "onFailure");
-                    Log.d("HTTP", "Status code: " + statusCode);
-                    if (object != null) {
-                        Log.d("HTTP", "Response: '" + object.toString() + "'");
+                    else {
+                        emptyListView1.setText(R.string.wrong_login_text);
+                        emptyListView1.setText(R.string.wrong_login_text);
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                     }
+                } catch (JSONException | ParseException e) {
                     setSubstituteScheduleFromFile();
-                    throwable.printStackTrace();
+                    e.printStackTrace();
                 }
+            }
 
-                @Override
-                public void onFinish() {
-                    Log.d("MainActivity", "onFinish");
-                    swipeRefresh1.setRefreshing(false);
-                    swipeRefresh2.setRefreshing(false);
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                Log.d("MainActivity", "onFailure");
+                Log.d("HTTP", "Status code: " + statusCode);
+                Log.d("HTTP", "Response: '" + response + "'");
+                setSubstituteScheduleFromFile();
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject object) {
+                Log.d("MainActivity", "onFailure");
+                Log.d("HTTP", "Status code: " + statusCode);
+                if (object != null) {
+                    Log.d("HTTP", "Response: '" + object.toString() + "'");
                 }
-            };
-        }
+                setSubstituteScheduleFromFile();
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void onFinish() {
+                Log.d("MainActivity", "onFinish");
+                swipeRefresh1.setRefreshing(false);
+                swipeRefresh2.setRefreshing(false);
+            }
+        };
         if (isNetworkAvailable()) {
             swipeRefresh1.setRefreshing(true);
             swipeRefresh2.setRefreshing(true);
-            OpenshiftNetworkClient.getSubstituteSchedule(this, responseHandler);
+            new NetworkClient(this).getSubstituteSchedule(responseHandler);
         } else {
             setSubstituteScheduleFromFile();
         }
@@ -196,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     private void openInfoPopup() {
         Date lastModified = SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null));
         DateFormat dateFormat;
-        if (Locale.getDefault().getLanguage().equals("DE")) {
+        if (Locale.getDefault().getLanguage().equals("de")) {
             dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
         } else {
             dateFormat = SimpleDateFormat.getDateTimeInstance();
@@ -220,6 +235,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        NetworkClient networkClient = new NetworkClient(this);
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -381,11 +398,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SubjectSelectionOverviewActivity.class));
                 return true;
 
-/*
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-*/
 
             default:
                 return super.onOptionsItemSelected(item);

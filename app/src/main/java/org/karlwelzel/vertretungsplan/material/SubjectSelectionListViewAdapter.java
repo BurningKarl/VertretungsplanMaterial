@@ -141,7 +141,7 @@ public class SubjectSelectionListViewAdapter extends ArrayAdapter<String> implem
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         // Inflate the menu for the CAB
         MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.menu_subject_selection_overview_context, menu);
+        inflater.inflate(R.menu.menu_subject_selection_context, menu);
         actionBar.hide();
         return true;
     }

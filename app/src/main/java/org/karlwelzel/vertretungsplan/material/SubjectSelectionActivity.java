@@ -114,7 +114,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
             };
         }
         if (isNetworkAvailable()) {
-            OpenshiftNetworkClient.getSubjectSelectionData(this, responseHandler);
+            new NetworkClient(this).getSubjectSelectionData(responseHandler);
         } else {
             try {
                 SubjectSelectionData data = SubjectSelectionData.loadFromFile(getExternalFilesDir(null));
@@ -284,6 +284,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        getSupportActionBar().setTitle(name);
 
         ListView listView = (ListView) findViewById(R.id.subject_selection_list_view);
         adapter = new SubjectSelectionListViewAdapter(this, getSupportActionBar(), subjectSelection);

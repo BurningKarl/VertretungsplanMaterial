@@ -24,14 +24,12 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_subject_selection"
-        android:title="@string/subject_selection"
+        android:title="@string/subject_selections"
         android:orderInCategory="90"
         app:showAsAction="never" />
-    <!--
-            <item
-                android:id="@+id/action_settings"
-                android:title="@string/settings"
-                android:orderInCategory="100"
-                app:showAsAction="never" />
-    -->
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- default value is a boolean -->
         <!--    <ListPreference
                 android:key="color_theme"
@@ -8,4 +8,17 @@
                 android:entries="@array/pref_color_themes"
                 android:entryValues="@array/pref_color_themes_internal"
                 android:defaultValue="default" />-->
+    <PreferenceCategory
+        android:title="@string/pref_login_title"
+        android:key="login">
+        <EditTextPreference
+            android:key="username"
+            android:title="@string/pref_username"
+            android:defaultValue="" />
+        <EditTextPreference
+            android:key="password"
+            android:title="@string/pref_password"
+            android:password="true"
+            android:defaultValue="" />
+    </PreferenceCategory>
 </PreferenceScreen>
