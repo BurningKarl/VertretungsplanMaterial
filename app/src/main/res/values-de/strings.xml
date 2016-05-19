@@ -53,6 +53,10 @@
         <item>Standard</item>
         <item>Dunkel</item>
     </string-array>
+    <string name="about">Über</string>
+    <string name="developer">Entwickler</string>
+    <string name="me">Karl Welzel</string>
+    <string name="version">Version</string>
 
     <string name="are_you_sure">Bist du sicher?</string>
 

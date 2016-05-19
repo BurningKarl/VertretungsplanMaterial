@@ -21,4 +21,14 @@
             android:password="true"
             android:defaultValue="" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/about"
+        android:key="about">
+        <Preference
+            android:title="@string/developer"
+            android:summary="@string/me"/>
+        <org.karlwelzel.vertretungsplan.material.VersionPreference
+            android:title="@string/version"
+            android:summary=""/>
+    </PreferenceCategory>
 </PreferenceScreen>

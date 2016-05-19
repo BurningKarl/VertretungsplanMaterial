@@ -56,6 +56,10 @@
         <item>default</item>
         <item>dark</item>
     </string-array>
+    <string name="about">About</string>
+    <string name="developer">Developer</string>
+    <string name="me">Karl Welzel</string>
+    <string name="version">Version</string>
 
     <string name="are_you_sure">Are you sure?</string>
 

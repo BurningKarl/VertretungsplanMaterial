@@ -111,7 +111,7 @@ public class SubstituteScheduleDay extends JSONObject { //represents one day of 
         }
         ArrayList<String> subjects = new ArrayList<>();
         for (Subject subj : subjectSelection.subjects) {
-            subjects.add(subj.get("subject") + " " + subj.get("course"));
+            subjects.add(subj.get("subject") + ((subj.get("course").equals("null")) ? "" : " " + subj.get("course")));
         }
         for (String curGrade : grades) {
             if (curGrade.equals(grade)) {
