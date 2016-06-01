@@ -1,5 +1,7 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import android.content.Context;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,23 +31,28 @@ public class SubstituteSchedule extends JSONObject { //represents the whole subs
     public ArrayList<String> date_strings = new ArrayList<>();
     public ArrayList<Date> dates = new ArrayList<>();
 
-    public static File cacheFile(File dirPath) {
-        return new File(dirPath, "SubstituteSchedule.json");
+    public static File getSubstituteScheduleDir(Context context) {
+        return context.getExternalFilesDir(null);
     }
 
-    public static Date getLastModifiedDate(File dirPath) {
-        return new Date(cacheFile(dirPath).lastModified());
+    public static File cacheFile(Context context) {
+        return new File(getSubstituteScheduleDir(context), "SubstituteSchedule.json");
     }
 
-    public static SubstituteSchedule loadFromFile(File dirPath) throws JSONException, ParseException, IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(cacheFile(dirPath)));
+    public static Date getLastModifiedDate(Context context) {
+        return new Date(cacheFile(context).lastModified());
+    }
+
+    public static SubstituteSchedule loadFromFile(Context context) throws JSONException, ParseException, IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(cacheFile(context)));
         SubstituteSchedule r = new SubstituteSchedule(reader.readLine());
         reader.close();
         return r;
     }
 
-    public void saveToFile(File dirPath) throws IOException {
-        File file = cacheFile(dirPath);
+    public void saveToFile(Context context) throws IOException {
+        File dirPath = getSubstituteScheduleDir(context);
+        File file = cacheFile(context);
         if (!dirPath.exists()) dirPath.mkdirs();
         if (!file.exists()) file.createNewFile();
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));

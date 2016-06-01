@@ -20,13 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -57,21 +50,12 @@ public class SubjectSelectionOverviewListViewAdapter extends ArrayAdapter<String
     }
 
     private void updateSubjectSelectionNameOrderFile() {
-        try {
-            File dirPath = getContext().getExternalFilesDir(null);
-            File file = new File(dirPath, SubjectSelection.SUBJECT_SELECTION_ORDER_FILE_NAME);
-            if (!dirPath.exists()) dirPath.mkdirs();
-            if (!file.exists()) file.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            JSONArray array = new JSONArray();
-            for (int i = 0; i < getCount(); i++) {
-                array.put(i, getItem(i));
-            }
-            writer.write(array.toString());
-            writer.close();
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+        Log.d("SubjectSelOvListView", "updateSubjectSelectionNameOrderFile");
+        ArrayList<String> names = new ArrayList<>(getCount());
+        for (int i = 0; i < getCount(); i++) {
+            names.add(getItem(i));
         }
+        SubjectSelection.updateSubjectSelectionNames(getContext(), names);
     }
 
     public SubjectSelectionOverviewListViewAdapter(Context context, ActionBar actionBar) {
@@ -91,7 +75,7 @@ public class SubjectSelectionOverviewListViewAdapter extends ArrayAdapter<String
 
     @Override
     public int getItemViewType(int position) {
-        return selected.contains(Integer.valueOf(position)) ? 1 : 0;
+        return selected.contains(position) ? 1 : 0;
     }
 
     @Override
@@ -241,7 +225,9 @@ public class SubjectSelectionOverviewListViewAdapter extends ArrayAdapter<String
                                     return;
                                 }
                                 String subjSelection = getItem(selected.get(0));
+                                setNotifyOnChange(false);
                                 remove(subjSelection);
+                                setNotifyOnChange(true);
                                 insert(subjSelection, index);
                                 actionMode.finish();
                             }

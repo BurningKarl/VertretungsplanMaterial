@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,8 +23,6 @@ public class SubstituteScheduleListViewAdapter extends ArrayAdapter<String> {
     private LayoutInflater inflater;
 
     private SubstituteScheduleDay day;
-
-    private File subjectSelectionDir;
 
     private static int fieldId = android.R.id.text1;
 
@@ -42,10 +39,9 @@ public class SubstituteScheduleListViewAdapter extends ArrayAdapter<String> {
         return getContext().getResources().getColor(id);
     }
 
-    public SubstituteScheduleListViewAdapter(Context context, File subjectSelectionDir) {
+    public SubstituteScheduleListViewAdapter(Context context) {
         super(context, resource, fieldId);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.subjectSelectionDir = subjectSelectionDir;
     }
 
     public void setSubstituteScheduleDay(SubstituteScheduleDay day) {
@@ -69,9 +65,9 @@ public class SubstituteScheduleListViewAdapter extends ArrayAdapter<String> {
 
     public ArrayList<String> gradesInSubjectSelections() {
         ArrayList<String> results = new ArrayList<>();
-        for (String name : SubjectSelection.subjectSelectionNames(subjectSelectionDir)) {
+        for (String name : SubjectSelection.getSubjectSelectionNames(getContext())) {
             try {
-                String grade = SubjectSelection.loadFromFile(subjectSelectionDir, name).getGrade();
+                String grade = SubjectSelection.loadFromFile(getContext(), name).getGrade();
                 if (!results.contains(grade)) {
                     results.add(grade);
                 }
@@ -102,7 +98,7 @@ public class SubstituteScheduleListViewAdapter extends ArrayAdapter<String> {
                 setItems(items);
             } else { //filter is subject selection
                 try {
-                    setItems(day.getFilteredSubstituteScheduleEntries(SubjectSelection.loadFromFile(subjectSelectionDir, filter)));
+                    setItems(day.getFilteredSubstituteScheduleEntries(SubjectSelection.loadFromFile(getContext(), filter)));
                 } catch (IOException e) {
                     e.printStackTrace();
                     setItems(day.getSubstituteScheduleEntries());
@@ -123,7 +119,9 @@ public class SubstituteScheduleListViewAdapter extends ArrayAdapter<String> {
             return 2;
         } else if (item.startsWith("Entfall")) {
             return 3;
-        } else if (item.startsWith("Vertretung")) {
+        } else if (item.startsWith("Vertretung")
+                || item.startsWith("Raum-Vtr.")
+                || item.startsWith("Statt-Vertretung")) {
             return 4;
         } else if (item.startsWith("Klausur")) {
             return 5;

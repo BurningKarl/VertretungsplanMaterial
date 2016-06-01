@@ -1,5 +1,7 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import android.content.Context;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,15 +27,16 @@ public class SubjectSelectionData extends JSONObject {
 
     public String json;
 
-    public static SubjectSelectionData loadFromFile(File dirPath) throws JSONException, ParseException, IOException {
-        File file = new File(dirPath, "SubjectSelectionData.json");
+    public static SubjectSelectionData loadFromFile(Context context) throws JSONException, ParseException, IOException {
+        File file = new File(context.getExternalFilesDir(null), "SubjectSelectionData.json");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         SubjectSelectionData r = new SubjectSelectionData(reader.readLine());
         reader.close();
         return r;
     }
 
-    public void saveToFile(File dirPath) throws IOException {
+    public void saveToFile(Context context) throws IOException {
+        File dirPath = context.getExternalFilesDir(null);
         File file = new File(dirPath, "SubjectSelectionData.json");
         if (!dirPath.exists()) dirPath.mkdirs();
         if (!file.exists()) file.createNewFile();
@@ -71,9 +74,9 @@ public class SubjectSelectionData extends JSONObject {
                     } else {
                         return lhs.length() - rhs.length();
                     }
-                } else if (lhs_starts_with_digits && !rhs_starts_with_digits) {
+                } else if (lhs_starts_with_digits) {
                     return -1;
-                } else if (!lhs_starts_with_digits && rhs_starts_with_digits) {
+                } else if (rhs_starts_with_digits) {
                     return 1;
                 } else {
                     return collator.compare(lhs, rhs);

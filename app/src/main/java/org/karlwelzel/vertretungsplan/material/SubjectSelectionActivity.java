@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -35,8 +34,6 @@ import cz.msebera.android.httpclient.Header;
  * Created by Karl on 15.10.2015.
  */
 public class SubjectSelectionActivity extends AppCompatActivity {
-
-    public final static String EXTRA_NAME = "org.karlwelzel.vertretungsplantest.NAME";
 
     public JsonHttpResponseHandler responseHandler;
 
@@ -66,7 +63,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                     makeSnackbar(R.string.download_successful).show();
 
                     try {
-                        data.saveToFile(getExternalFilesDir(null));
+                        data.saveToFile(SubjectSelectionActivity.this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -76,7 +73,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
 
                 private void setSubjectSelectionDataFromFile() {
                     try {
-                        SubjectSelectionData data = SubjectSelectionData.loadFromFile(getExternalFilesDir(null));
+                        SubjectSelectionData data = SubjectSelectionData.loadFromFile(SubjectSelectionActivity.this);
                         makeSnackbar(R.string.download_failed_load_subject_selection_from_cache).show();
                         SubjectSelectionActivity.this.setSubjectSelectionData(data);
                     } catch (JSONException | IOException | ParseException e) {
@@ -117,7 +114,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
             new NetworkClient(this).getSubjectSelectionData(responseHandler);
         } else {
             try {
-                SubjectSelectionData data = SubjectSelectionData.loadFromFile(getExternalFilesDir(null));
+                SubjectSelectionData data = SubjectSelectionData.loadFromFile(this);
                 makeSnackbar(R.string.download_failed_load_subject_selection_from_cache).show();
                 SubjectSelectionActivity.this.setSubjectSelectionData(data);
             } catch (JSONException | IOException | ParseException e) {
@@ -162,7 +159,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         try {
                             subjectSelection.setGrade(subjectSelectionData.getGrades().get(position));
-                            subjectSelection.saveToFile(getSubjectSelectionDir());
+                            subjectSelection.saveToFile(SubjectSelectionActivity.this);
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -197,9 +194,25 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                             try {
                                 JSONArray class_ = classes.getJSONArray(position);
                                 Log.d("SubjectSelectionAct.", stringClasses.get(position));
-                                subjectSelection.subjects.add(new Subject(subject, class_.getString(0), class_.getString(1)));
+                                boolean replaced = false;
+                                for (int i = 0; i < subjectSelection.subjects.size(); i++) {
+                                    Subject curSubject = subjectSelection.subjects.get(i);
+                                    if (curSubject.get("subject").equals(subject)) {
+                                        if (!replaced) {
+                                            subjectSelection.subjects.set(i, new Subject(subject, class_.getString(0), class_.getString(1)));
+                                            replaced = true;
+                                        } else {
+                                            subjectSelection.subjects.remove(i);
+                                            i--;
+                                        }
+                                    }
+                                }
+                                if (!replaced) {
+                                    subjectSelection.subjects.add(new Subject(subject, class_.getString(0), class_.getString(1)));
+                                }
+                                //TODO: Place the new new subject in the same spot of the old one (if one existed)
                                 try {
-                                    subjectSelection.saveToFile(getSubjectSelectionDir());
+                                    subjectSelection.saveToFile(SubjectSelectionActivity.this);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -217,6 +230,11 @@ public class SubjectSelectionActivity extends AppCompatActivity {
 
     private void openAddSubjectPopup() {
         try {
+            if (subjectSelectionData == null) {
+                openNotDownloadedPopup();
+                return;
+            }
+
             ArrayList<String> usedSubjects = new ArrayList<>();
             for (Subject sub : subjectSelection.subjects) {
                 usedSubjects.add(sub.get("subject"));
@@ -240,20 +258,8 @@ public class SubjectSelectionActivity extends AppCompatActivity {
         }
     }
 
-    public File getSubjectSelectionDir() {
-        return getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
-    }
-
     void setSubjectSelectionData(SubjectSelectionData data) {
         subjectSelectionData = data;
-
-        try {
-            Log.d("SubjectSelectionAct.", subjectSelectionData.getGrades().toString());
-            Log.d("SubjectSelectionAct.", subjectSelectionData.getSubjectsOfGrade("Q1").toString());
-            Log.d("SubjectSelectionAct.", subjectSelectionData.getClassesOfSubject("Q1", "Me").getJSONArray(0).getString(0));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         if (subjectSelection.getGrade() == null) {
             openGradePopup();
@@ -269,7 +275,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
 
         name = getIntent().getStringExtra(SubjectSelectionOverviewActivity.EXTRA_NAME);
         try {
-            subjectSelection = SubjectSelection.loadFromFile(getSubjectSelectionDir(), name);
+            subjectSelection = SubjectSelection.loadFromFile(this, name);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             subjectSelection = new SubjectSelection(name);
@@ -307,7 +313,7 @@ public class SubjectSelectionActivity extends AppCompatActivity {
                     Log.e("SubjectSelectionAct.", item + " could not be deleted");
                 } else {
                     try {
-                        subjectSelection.saveToFile(getSubjectSelectionDir());
+                        subjectSelection.saveToFile(SubjectSelectionActivity.this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

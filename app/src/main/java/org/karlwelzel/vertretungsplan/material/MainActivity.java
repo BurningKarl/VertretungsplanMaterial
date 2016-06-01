@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private Menu toolbarMenu;
     private boolean bannerMenuItemVisible;
     private Spinner spinner;
+    private SubstituteScheduleSpinnerAdapter substituteScheduleSpinnerAdapter;
     private ListView listView1;
     private ListView listView2;
     private TextView emptyListView1;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            substituteSchedule.saveToFile(getExternalFilesDir(null));
+            substituteSchedule.saveToFile(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     private void setSubstituteScheduleFromFile(boolean showSnackbar) {
         Snackbar snackbar;
         try {
-            substituteSchedule = SubstituteSchedule.loadFromFile(getExternalFilesDir(null));
+            substituteSchedule = SubstituteSchedule.loadFromFile(this);
             tabHost.setSubstituteSchedule(substituteSchedule);
             snackbar = makeSnackbar(R.string.download_failed_load_from_cache);
             emptyListView1.setText(R.string.no_entries);
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openInfoPopup() {
-        Date lastModified = SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null));
+        Date lastModified = SubstituteSchedule.getLastModifiedDate(this);
         DateFormat dateFormat;
         if (Locale.getDefault().getLanguage().equals("de")) {
             dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
@@ -226,10 +227,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .create().show();
-    }
-
-    public File getSubjectSelectionDir() {
-        return getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
     }
 
     @Override
@@ -253,14 +250,15 @@ public class MainActivity extends AppCompatActivity {
         emptyListView2.setText(R.string.loading);
         listView2.setEmptyView(emptyListView2);
 
-        substituteScheduleListViewAdapter1 = new SubstituteScheduleListViewAdapter(MainActivity.this, getSubjectSelectionDir());
+        substituteScheduleListViewAdapter1 = new SubstituteScheduleListViewAdapter(MainActivity.this);
         listView1.setAdapter(substituteScheduleListViewAdapter1);
-        substituteScheduleListViewAdapter2 = new SubstituteScheduleListViewAdapter(MainActivity.this, getSubjectSelectionDir());
+        substituteScheduleListViewAdapter2 = new SubstituteScheduleListViewAdapter(MainActivity.this);
         listView2.setAdapter(substituteScheduleListViewAdapter2);
 
         spinner = (Spinner) findViewById(R.id.spinner);
-        SubstituteScheduleSpinnerAdapter substituteScheduleSpinnerAdapter = new SubstituteScheduleSpinnerAdapter(this, substituteScheduleListViewAdapter1, substituteScheduleListViewAdapter2);
-        substituteScheduleSpinnerAdapter.setSubjectSelectionNames(SubjectSelection.subjectSelectionNames(getSubjectSelectionDir()));
+        substituteScheduleSpinnerAdapter = new SubstituteScheduleSpinnerAdapter(this, substituteScheduleListViewAdapter1, substituteScheduleListViewAdapter2);
+        substituteScheduleSpinnerAdapter.setNotifyOnChange(true);
+        substituteScheduleSpinnerAdapter.setSubjectSelectionNames(SubjectSelection.getSubjectSelectionNames(this));
         spinner.setAdapter(substituteScheduleSpinnerAdapter);
         spinner.setOnItemSelectedListener(substituteScheduleSpinnerAdapter);
 
@@ -315,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup(substituteScheduleListViewAdapter1, substituteScheduleListViewAdapter2);
 
         if (savedInstanceState == null) {
-            if (SubstituteSchedule.getLastModifiedDate(getExternalFilesDir(null)).after(new Date((new Date()).getTime() - 3 * 60 * 1000))) { //newer than 3min
+            if (SubstituteSchedule.getLastModifiedDate(this).after(new Date((new Date()).getTime() - 3 * 60 * 1000))) { //newer than 3min
                 Log.d("MainActivity", "substitute schedule loaded from file, because it was downloaded 5min ago");
                 setSubstituteScheduleFromFile(false);
             } else {
@@ -341,6 +339,14 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent = new Intent(this, SubstituteScheduleNotificationService.class);
         startService(serviceIntent);
 */
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("MainActivity", "onResume");
+        super.onResume();
+
+        substituteScheduleSpinnerAdapter.setSubjectSelectionNames(SubjectSelection.getSubjectSelectionNames(this));
     }
 
     @Override

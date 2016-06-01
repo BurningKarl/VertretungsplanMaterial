@@ -12,7 +12,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,37 +19,19 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.io.File;
-
 /**
  * Created by Karl on 12.10.2015.
  */
 public class SubjectSelectionOverviewActivity extends AppCompatActivity {
 
-    public final static String EXTRA_NAME = "org.karlwelzel.vertretungsplantest.NAME";
+    public final static String EXTRA_NAME = "org.karlwelzel.vertretungsplan.material.NAME";
 
-    Toolbar toolbar;
-    ListView listView;
-    SubjectSelectionOverviewListViewAdapter listViewAdapter;
-    ActionMode actionMode = null;
-
-    public File getSubjectSelectionDir() {
-        return getExternalFilesDir(SubjectSelection.SUBJECT_SELECTION_DIR_NAME);
-    }
+    public Toolbar toolbar;
+    public ListView listView;
+    public SubjectSelectionOverviewListViewAdapter listViewAdapter;
 
     private void editSubjectSelection(String name) {
-        //TODO: If no grade was set (or no file was created), don't add this name to SubjectSelectionOrder
         Log.d("SubjectSelectionOv.", "editSubjectSelection: " + name);
-        boolean found = false;
-        for (int i = 0; i < listViewAdapter.getCount(); i++) {
-            if (name.equals(listViewAdapter.getItem(i))) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            listViewAdapter.add(name);
-        }
         Intent intent = new Intent(this, SubjectSelectionActivity.class);
         intent.putExtra(EXTRA_NAME, name);
         startActivity(intent);
@@ -62,11 +43,8 @@ public class SubjectSelectionOverviewActivity extends AppCompatActivity {
 
     private void deleteSubjectSelection(String name) {
         Log.d("SubjectSelectionOv.", "deleteSubjectSelection: " + name);
-        listViewAdapter.remove(name);
-        File file = SubjectSelection.getFile(getSubjectSelectionDir(), name);
-        if (!file.delete()) {
-            Log.e("SubjectSelectionOv.", "Failed to delete " + file.toString());
-        }
+        listViewAdapter.remove(name); //This automatically deletes the SubjectSelection from SubjectSelectionOrder.json
+        SubjectSelection.deleteSubjectSelection(this, name);
     }
 
     private void deleteSubjectSelection(int position) {
@@ -92,7 +70,6 @@ public class SubjectSelectionOverviewActivity extends AppCompatActivity {
         final ActionBar actionBar = SubjectSelectionOverviewActivity.this.getSupportActionBar();
         listView = (ListView) findViewById(R.id.subjectSelectionListView);
         listViewAdapter = new SubjectSelectionOverviewListViewAdapter(this, actionBar);
-        listViewAdapter.addAll(SubjectSelection.subjectSelectionNames(getSubjectSelectionDir()));
         listView.setAdapter(listViewAdapter);
         listView.setMultiChoiceModeListener(listViewAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,6 +84,18 @@ public class SubjectSelectionOverviewActivity extends AppCompatActivity {
                 deleteSubjectSelection(item);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d("SubjectSelectionOv.", "onResume");
+
+        listViewAdapter.setNotifyOnChange(false);
+        listViewAdapter.clear();
+        listViewAdapter.setNotifyOnChange(true);
+        listViewAdapter.addAll(SubjectSelection.getSubjectSelectionNames(this));
     }
 
     @Override

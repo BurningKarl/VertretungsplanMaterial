@@ -1,5 +1,6 @@
 package org.karlwelzel.vertretungsplan.material;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -32,13 +33,43 @@ public class SubjectSelection extends JSONObject {
         return new File(dirPath, name + ".json");
     }
 
-    public static ArrayList<String> subjectSelectionNames(File dirPath) {
-        File parentPath = dirPath.getParentFile();
+    public static File getSubjectSelectionDir(Context context) {
+        return context.getExternalFilesDir(SUBJECT_SELECTION_DIR_NAME);
+    }
+
+    public static void updateSubjectSelectionNames(Context context, ArrayList<String> names) {
+        File dirPath = context.getExternalFilesDir(null);
+        Log.d("SubjectSelection", "updateSubjectSelectionNames: "+dirPath.toString());
+        Log.d("SubjectSelection", "updateSubjectSelectionNames: "+names.size());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(parentPath, SUBJECT_SELECTION_ORDER_FILE_NAME)));
+            File file = new File(dirPath, SUBJECT_SELECTION_ORDER_FILE_NAME);
+            if (!dirPath.exists()) dirPath.mkdirs();
+            if (!file.exists()) file.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            JSONArray array = new JSONArray(names);
+            Log.d("SubjectSelection", "updateSubjectSelectionNames: "+array.toString());
+            writer.write(array.toString());
+            writer.close();
+            Log.d("SubjectSelection", "updateSubjectSelectionNames: "+getSubjectSelectionNames(context).size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void addSubjectSelectionName(Context context, String name) {
+        ArrayList<String> names = getSubjectSelectionNames(context);
+        names.add(name);
+        updateSubjectSelectionNames(context, names);
+    }
+
+    public static ArrayList<String> getSubjectSelectionNames(Context context) {
+        File dirPath = context.getExternalFilesDir(null);
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(new File(dirPath, SUBJECT_SELECTION_ORDER_FILE_NAME)));
             JSONArray array = new JSONArray(reader.readLine());
             reader.close();
-            ArrayList<String> list = new ArrayList<>();
+            ArrayList<String> list = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++) {
                 list.add(array.getString(i));
             }
@@ -56,18 +87,29 @@ public class SubjectSelection extends JSONObject {
         }
     }
 
-    public static SubjectSelection loadFromFile(File dirPath, String name) throws IOException, JSONException {
-        File file = getFile(dirPath, name);
+    public static void deleteSubjectSelection(Context context, String name) {
+        File file = SubjectSelection.getFile(getSubjectSelectionDir(context), name);
+        if (!file.delete()) {
+            Log.e("SubjectSelection", "Failed to delete " + file.toString());
+        }
+    }
+
+    public static SubjectSelection loadFromFile(Context context, String name) throws IOException, JSONException {
+        File file = getFile(getSubjectSelectionDir(context), name);
         BufferedReader reader = new BufferedReader(new FileReader(file));
         SubjectSelection r = new SubjectSelection(name, reader.readLine());
         reader.close();
         return r;
     }
 
-    public void saveToFile(File dirPath) throws IOException {
+    public void saveToFile(Context context) throws IOException {
+        File dirPath = getSubjectSelectionDir(context);
         File file = getFile(dirPath, name);
         if (!dirPath.exists()) dirPath.mkdirs();
         if (!file.exists()) file.createNewFile();
+        if (!getSubjectSelectionNames(context).contains(name)) {
+            addSubjectSelectionName(context, name);
+        }
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(toString());
         writer.close();

@@ -77,7 +77,7 @@ public class SubjectSelectionListViewAdapter extends ArrayAdapter<String> implem
 
     @Override
     public int getItemViewType(int position) {
-        return selected.contains(Integer.valueOf(position)) ? 1 : 0;
+        return selected.contains(position) ? 1 : 0;
     }
 
     @Override
