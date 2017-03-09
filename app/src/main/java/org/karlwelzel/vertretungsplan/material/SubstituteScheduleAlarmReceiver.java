@@ -10,7 +10,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import java.util.Calendar;
-import java.util.Random;
 
 
 /**
@@ -91,14 +90,7 @@ public class SubstituteScheduleAlarmReceiver extends WakefulBroadcastReceiver {
         // Set the alarm to fire at approximately 6:00 a.m. (with random 10min delay), according to the device's
         // clock, and to repeat once a day.
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-               calendarShowAllEntriesFromToday.getTimeInMillis()+ (new Random()).nextInt(10*60*1000), AlarmManager.INTERVAL_DAY, alarmIntent);
-
-        //TODO: Add setting to change the interval
-        // Wake up the device to fire the alarm in 1 hour, and every hour
-        // after that.
-        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                AlarmManager.INTERVAL_HOUR,
-                AlarmManager.INTERVAL_HOUR, alarmIntent);
+               calendarShowAllEntriesFromToday.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
 
         // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
         // device is rebooted.
